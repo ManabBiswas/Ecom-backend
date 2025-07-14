@@ -1,0 +1,41 @@
+const mongoose = require("mongoose");
+
+// mongoose.connect("mongodb://localhost:27017/ecommerce");
+
+const productSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    discount: {
+        type: Number,
+        default: 0,
+    },
+    image: {
+        type: String,
+        required: true,
+    },
+    
+    bgColor: {
+        type: String,
+        required: true,
+    },
+    textColor: {
+        type: String,
+        required: true,
+    },
+    panelColor: {
+        type: String,
+        required: true,
+    },
+    category: {
+        type: String,
+        required: true,
+    },
+});
+
+module.exports = mongoose.model("product", productSchema);
