@@ -24,10 +24,6 @@ const userSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
-    isadmin: {
-        type: Boolean,
-        required: true,
-    },
     cart: {
         type: Array,
         required: true,
