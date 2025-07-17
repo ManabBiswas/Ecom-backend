@@ -26,17 +26,14 @@ const userSchema = mongoose.Schema({
     },
     cart: {
         type: Array,
-        required: true,
         default:[],
     },
     wishlist: {
         type: Array,
-        required: true,
         default:[],
     },
     order: {
         type: Array,
-        required: true,
         default:[],
     },
     profileImage: {

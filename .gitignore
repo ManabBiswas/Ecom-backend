@@ -36,3 +36,6 @@ temp/
 
 # Optional: ignore specific config files
 config.js
+
+#temp
+README2.md
