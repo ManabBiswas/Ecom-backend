@@ -50,6 +50,7 @@ router.post("/register", async (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
+        console.log("tokrn",token)
 
         console.log("User registered successfully:", user.fullName);
         res.status(201).json({ 
