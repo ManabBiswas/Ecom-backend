@@ -1,12 +1,757 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Shop - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .product-card { 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        .product-card:hover::before {
+            left: 100%;
+        }
+        .product-card:hover { 
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.2);
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .product-image {
+            transition: transform 0.4s ease;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.08);
+        }
+        .price-tag {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+        .discount-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .category-chip {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(8px);
+        }
+        .search-glow {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+        .cart-bounce { animation: bounce 0.6s ease-in-out; }
+        @keyframes bounce { 
+            0%, 20%, 60%, 100% { transform: translateY(0); } 
+            40% { transform: translateY(-12px); } 
+            80% { transform: translateY(-6px); } 
+        }
+        .modal-backdrop {
+            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .slide-in {
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .rupee-symbol {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+        .category-badge {
+            transition: all 0.3s ease;
+        }
+        .category-badge:hover {
+            transform: scale(1.05);
+        }
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .add-to-cart-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .add-to-cart-btn:hover::before {
+            left: 100%;
+        }
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.3);
+        }
+        .filter-sidebar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .toast-notification {
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .header-glass {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+    </style>
 </head>
-<body>
-    <h1>Welcome to the Shop</h1>
-    <p>It's shop page</p>
-</body>
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="header-glass shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="/" class="text-3xl font-bold gradient-text">
+                            ShopHub
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <a href="/" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/shop" class="nav-link active text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Shop</a>
+                        <a href="/about" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                        <a href="/contact" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="openCartModal()" class="relative p-3 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 rounded-full hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6"/>
+                        </svg>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium">0</span>
+                    </button>
+                    <button onclick="logout()" class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 shadow-lg">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search and Filter Section -->
+    <div class="glass-effect shadow-sm border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                <!-- Search Bar -->
+                <div class="relative flex-1 max-w-2xl">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search for products..." class="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl leading-5 bg-white/90 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent search-glow transition-all duration-300 text-lg" oninput="filterProducts()">
+                </div>
+
+                <!-- Sort and Filter -->
+                <div class="flex flex-wrap gap-4">
+                    <select id="sortSelect" class="px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/90 transition-all duration-300 text-sm font-medium" onchange="sortProducts()">
+                        <option value="name">Sort by Name</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="discount">Highest Discount</option>
+                    </select>
+                    <select id="categoryFilter" class="px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/90 transition-all duration-300 text-sm font-medium" onchange="filterProducts()">
+                        <option value="all">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="home">Home & Garden</option>
+                        <option value="books">Books</option>
+                        <option value="sports">Sports</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:w-80">
+                <div class="filter-sidebar rounded-3xl shadow-xl p-8 sticky top-32 floating-card">
+                    <h3 class="text-2xl font-bold gradient-text mb-6">Filters</h3>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Price Range</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="price1" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="price1" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">Under ₹500</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="price2" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="price2" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">₹500 - ₹1,000</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="price3" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="price3" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">₹1,000 - ₹5,000</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="price4" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="price4" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">Above ₹5,000</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discount Filter -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Discount</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="discount1" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="discount1" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">10% & above</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="discount2" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="discount2" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">20% & above</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="discount3" class="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded-md" onchange="filterProducts()">
+                                <label for="discount3" class="ml-3 text-sm text-gray-700 cursor-pointer font-medium">30% & above</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <button onclick="clearFilters()" class="w-full bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 text-gray-800 px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="flex-1">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-4xl font-bold gradient-text">All Products</h2>
+                    <p class="text-lg text-gray-600 font-medium" id="productCount">Showing 12 products</p>
+                </div>
+
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Products will be populated here -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center mt-16">
+                    <nav class="flex items-center space-x-3">
+                        <button class="px-6 py-3 text-sm font-medium text-gray-500 bg-white/80 border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                            Previous
+                        </button>
+                        <button class="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-lg">
+                            1
+                        </button>
+                        <button class="px-6 py-3 text-sm font-medium text-gray-700 bg-white/80 border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                            2
+                        </button>
+                        <button class="px-6 py-3 text-sm font-medium text-gray-700 bg-white/80 border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                            3
+                        </button>
+                        <button class="px-6 py-3 text-sm font-medium text-gray-700 bg-white/80 border-2 border-gray-200 rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                            Next
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50" onclick="closeCartModal()">
+        <div class="glass-effect rounded-3xl max-w-4xl w-full mx-4 max-h-screen overflow-y-auto slide-in shadow-2xl" onclick="event.stopPropagation()">
+            <div class="p-8 border-b border-white/20">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold gradient-text">Shopping Cart</h2>
+                    <button onclick="closeCartModal()" class="text-gray-500 hover:text-gray-700 transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-8">
+                <div id="cartItems" class="space-y-4 mb-8">
+                    <!-- Cart items will be populated here -->
+                </div>
+                <div class="border-t border-white/20 pt-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-2xl font-semibold text-gray-900">Total:</span>
+                        <span id="cartTotal" class="text-3xl font-bold gradient-text rupee-symbol">₹0</span>
+                    </div>
+                    <button onclick="checkout()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg text-lg">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+    <script>
+        // Sample product data matching your MongoDB schema
+        let products = [
+            {
+                id: 1,
+                name: "Premium Wireless Headphones",
+                price: 2999,
+                discount: 20,
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
+                bgColor: "#EBF8FF",
+                textColor: "#2D3748",
+                panelColor: "#4299E1",
+                category: "electronics"
+            },
+            {
+                id: 2,
+                name: "Smart Fitness Watch",
+                price: 8999,
+                discount: 15,
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+                bgColor: "#F0FFF4",
+                textColor: "#2D3748",
+                panelColor: "#38A169",
+                category: "electronics"
+            },
+            {
+                id: 3,
+                name: "Casual Cotton T-Shirt",
+                price: 699,
+                discount: 25,
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop",
+                bgColor: "#FFF5F5",
+                textColor: "#2D3748",
+                panelColor: "#E53E3E",
+                category: "fashion"
+            },
+            {
+                id: 4,
+                name: "Bluetooth Portable Speaker",
+                price: 1499,
+                discount: 30,
+                image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=300&fit=crop",
+                bgColor: "#F7FAFC",
+                textColor: "#2D3748",
+                panelColor: "#805AD5",
+                category: "electronics"
+            },
+            {
+                id: 5,
+                name: "Ceramic Coffee Mug Set",
+                price: 899,
+                discount: 10,
+                image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop",
+                bgColor: "#FFFAF0",
+                textColor: "#2D3748",
+                panelColor: "#DD6B20",
+                category: "home"
+            },
+            {
+                id: 6,
+                name: "Yoga Mat Premium",
+                price: 1299,
+                discount: 20,
+                image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=300&fit=crop",
+                bgColor: "#F0F8FF",
+                textColor: "#2D3748",
+                panelColor: "#3182CE",
+                category: "sports"
+            },
+            {
+                id: 7,
+                name: "LED Desk Lamp",
+                price: 1799,
+                discount: 15,
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+                bgColor: "#F7FAFC",
+                textColor: "#2D3748",
+                panelColor: "#4A5568",
+                category: "home"
+            },
+            {
+                id: 8,
+                name: "Wireless Gaming Mouse",
+                price: 2499,
+                discount: 25,
+                image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop",
+                bgColor: "#1A202C",
+                textColor: "#F7FAFC",
+                panelColor: "#00F5FF",
+                category: "electronics"
+            },
+            {
+                id: 9,
+                name: "Bestselling Fiction Novel",
+                price: 399,
+                discount: 5,
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+                bgColor: "#FFF8DC",
+                textColor: "#2D3748",
+                panelColor: "#8B4513",
+                category: "books"
+            },
+            {
+                id: 10,
+                name: "Running Sneakers",
+                price: 3999,
+                discount: 18,
+                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
+                bgColor: "#F5F5F5",
+                textColor: "#2D3748",
+                panelColor: "#FF6347",
+                category: "sports"
+            },
+            {
+                id: 11,
+                name: "Designer Handbag",
+                price: 4999,
+                discount: 12,
+                image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=300&fit=crop",
+                bgColor: "#FFF0F5",
+                textColor: "#2D3748",
+                panelColor: "#FF1493",
+                category: "fashion"
+            },
+            {
+                id: 12,
+                name: "Indoor Plant Pot Set",
+                price: 799,
+                discount: 22,
+                image: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=300&fit=crop",
+                bgColor: "#F0FFF0",
+                textColor: "#2D3748",
+                panelColor: "#228B22",
+                category: "home"
+            }
+        ];
+
+        let cart = [];
+        let filteredProducts = [...products];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            updateCartCount();
+            updateCartDisplay();
+        });
+
+        // Product rendering function
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const productCount = document.getElementById('productCount');
+            
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">No products found matching your criteria.</div>';
+                productCount.textContent = '0';
+                return;
+            }       
+            grid.innerHTML = '';
+            filteredProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card glass-effect rounded-2xl p-6 hover-lift transition-all duration-300';
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">${product.name}</h3>
+                    <p class="text-sm text-gray-600">${product.description}</p>
+                    <div class="flex items-center justify-between mt-4">
+                        <div>
+                            <span class="text-xl font-bold text-gray-900">$${product.price.toFixed(2)}</span>
+                            ${product.originalPrice ? `<span class="text-sm line-through text-gray-500 ml-2">$${product.originalPrice.toFixed(2)}</span>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${product.badge ? `<span class="px-2 py-1 text-xs font-semibold text-white rounded-full bg-gradient-to-r from-${getBadgeColor(product.badge)}">${product.badge.charAt(0).toUpperCase() + product.badge.slice(1)}</span>` : ''}
+                            <span class="text-sm text-yellow-500 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15a1 1 0 11-2 0 1 1 0 012 0zm.93-3.412a1.5 1.5 0 00-.93-.588V9a1.5 1.5 0 10-3 0v2.5c-.36.14-.67.38-.93.588a1.5 1.5 0 00-.37.93V14a2 2 0 002 2h3a2 2 0 002-2v-.412a1.5 1.5 0 00-.37-.93zM10.5 7a3.5 3.5 0 11-7 .001A3.5 3.5 0 0110.5 7z"/></svg>
+                                ${product.rating} (${product.reviews} reviews)
+                            </span>
+                        </div>
+                    </div>
+                    <button class="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 hover:scale-105" onclick="addToCart(${product.id})">
+                        Add to Cart
+                    </button>
+                `;  
+                grid.appendChild(productCard);
+            });
+            productCount.textContent = `Showing ${filteredProducts.length} products`;
+        }
+        // Get badge color based on type
+        function getBadgeColor(badge) {
+            switch (badge) {
+                case 'discount':
+                    return 'red-500';
+                case 'bestseller':
+                    return 'green-500';
+                case 'new':
+                    return 'blue-500';
+                default:
+                    return 'gray-500';
+            }
+        }
+        // Add product to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartCount();
+            showToast(`${product.name} added to cart!`, 'success');
+            updateCartDisplay();
+        }
+        // Update cart count
+        function updateCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems > 0 ? totalItems : '0';
+            cartCount.classList.toggle('cart-bounce', totalItems > 0);
+        }
+        // Update cart display
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="text-center text-gray-500">Your cart is empty.</div>';
+                cartTotal.textContent = '$0.00';
+                return;
+            }
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                const cartItem = document.createElement('div');
+                cartItem.className = 'flex items-center justify-between p-4 bg-white/80 rounded-lg shadow-sm mb-4';
+                cartItem.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900">${item.name}</h4>
+                            <p class="text-sm text-gray-600">Price: $${item.price.toFixed(2)}</p>
+                            <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="text-red-500 hover:text-red-700 transition-all duration-200" onclick="removeFromCart(${item.id})">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                        <span class="text-lg font-bold text-gray-900">$${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+        }
+        // Remove item from cart
+        function removeFromCart(productId) {
+            const itemIndex = cart.findIndex(item => item.id === productId);
+            if (itemIndex > -1) {
+                cart.splice(itemIndex, 1);
+                updateCartCount();
+                showToast('Item removed from cart', 'info');
+                updateCartDisplay();
+            }
+        }
+        // Open cart modal
+        function openCartModal() {
+            document.getElementById('cartModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        // Close cart modal
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        // Show toast notification
+        function showToast(message, type) { 
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-notification bg-${type === 'success' ? 'green-500' : type === 'error' ? 'red-500' : 'blue-500'} text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-300`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+        // Filter products based on search input
+        function filterProducts() { 
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const priceCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const selectedPrices = Array.from(priceCheckboxes).filter(cb => cb.checked).map(cb => cb.id);
+            const ratingCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const selectedRatings = Array.from(ratingCheckboxes).filter(cb => cb.checked).map(cb => cb.id);
+
+            filteredProducts = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchInput);
+                const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+                const matchesPrice = selectedPrices.length === 0 || selectedPrices.some(price => {
+                    switch (price) {
+                        case 'price1': return product.price < 25;
+                        case 'price2': return product.price >= 25 && product.price < 50;
+                        case 'price3': return product.price >= 50 && product.price < 100;
+                        case 'price4': return product.price >= 100;
+                        default: return true;
+                    }
+                });
+                const matchesRating = selectedRatings.length === 0 || selectedRatings.some(rating => {
+                    switch (rating) {
+                        case 'rating4': return product.rating >= 4;
+                        case 'rating3': return product.rating >= 3;
+                        default: return true;
+                    }
+                });
+                return matchesSearch && matchesCategory && matchesPrice && matchesRating;
+            });
+
+            renderProducts();
+        }
+        // Sort products based on selected criteria
+        function sortProducts() {
+            const sortSelect = document.getElementById('sortSelect').value;
+            switch (sortSelect) {
+                case 'name':
+                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+            renderProducts();
+        }
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = 'all';
+            const priceCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            priceCheckboxes.forEach(cb => cb.checked = false);
+            const ratingCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            ratingCheckboxes.forEach(cb => cb.checked = false);
+            filteredProducts = [...products];
+            renderProducts();
+        }
+        // Checkout function
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', 'error');
+                return;
+            }
+            // Simulate checkout process
+            showToast('Checkout successful! Thank you for your purchase.', 'success');
+            cart = [];
+            updateCartCount();
+            updateCartDisplay();
+            closeCartModal();
+        }
+        // Logout function
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                // Simulate logout process
+                window.location.href = 'users/logout'; // Redirect to home page
+            }
+        }
+        // Close cart modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('cartModal');
+            if (event.target === modal) {
+                closeCartModal();
+            }
+        };
+
+
+
+
+        </script>
+        </body>
 </html>

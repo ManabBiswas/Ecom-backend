@@ -36,6 +36,13 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
+app.get("/shop", (req, res) => {
+    res.render("shop", {
+        error: req.flash("error"),
+        success: req.flash("success")
+    });
+});
+
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
