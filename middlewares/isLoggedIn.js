@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
         const user = await userModel.findById({decoded.userId}).select("-password");
         req.user = user;
         next();
-        next();
     }
     catch(err){
         console.error("Authentication error:", err.message);

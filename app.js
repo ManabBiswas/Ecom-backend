@@ -15,7 +15,6 @@ const userRouter = require("./routes/userRouter")
 const productRouter = require("./routes/productRouter");
 
 
-app.use(flash());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
@@ -25,8 +24,9 @@ app.set("view engine", "ejs");
 app.use(expressSession({
     secret: process.env.SESSION_SECRET || 'fallback-secret',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }));
+app.use(flash());
 
 app.use("/owners", ownerRouter);
 app.use("/users", userRouter);

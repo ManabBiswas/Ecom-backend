@@ -3,14 +3,14 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-    res.render("index");
+    let error = req.flash("error");
+    
+    res.render("index", { error });
 });
 
 
 router.get("/shop",isLoggedIn, (req, res) => {
-    let error = req.flash("error");
-    
-    res.render("index", { error });
+    res.render("shop");
 });
 
 module.exports = router;
