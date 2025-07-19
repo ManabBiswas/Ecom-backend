@@ -10,6 +10,7 @@ require('dotenv').config()
 
 const db = require("./config/mongooseConnection");
 
+const indexRouter = require("./routes/index")
 const ownerRouter = require("./routes/ownerRouter")
 const userRouter = require("./routes/userRouter")
 const productRouter = require("./routes/productRouter");
@@ -28,20 +29,10 @@ app.use(expressSession({
 }));
 app.use(flash());
 
+app.use("/", indexRouter);
 app.use("/owners", ownerRouter);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
-
-app.get("/", (req, res) => {
-    res.render("index");
-});
-
-app.get("/shop", (req, res) => {
-    res.render("shop", {
-        error: req.flash("error"),
-        success: req.flash("success")
-    });
-});
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
