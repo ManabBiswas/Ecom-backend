@@ -6,9 +6,15 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 
 // Test route
-router.get("/", (req, res) => {
-    res.send("owners route is working now!");
+// router.get("/", (req, res) => {
+//     res.send("owners route is working now!");
+// });
+
+router.get("/admin", (req, res) => {
+    res.render("createProduct");
 });
+
+
 
 // Create Owner (Only one owner allowed)
 router.post("/create", async (req, res) => {
