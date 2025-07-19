@@ -106,21 +106,21 @@
   </nav>
 
   <!-- Search and Filter Section -->
-  <div class="glass-effect shadow-sm border-b border-white/20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div class="flex flex-col md:flex-row gap-4 items-center">
+  <div class="glass-effect shadow-lg border-b border-white/20 mb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col md:flex-row gap-6 items-center">
         <!-- Search Bar -->
-        <div class="relative flex-1 max-w-md">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <div class="relative flex-1 max-w-md w-full">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <input type="text" id="searchInput" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <input type="text" id="searchInput" placeholder="Search products..." class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm hover:border-purple-300 transition-colors">
         </div>
 
         <!-- Category Filter -->
-        <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+        <select id="categoryFilter" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm hover:border-purple-300 transition-colors">
           <option value="all">All Categories</option>
           <option value="electronics">Electronics</option>
           <option value="fashion">Fashion</option>
@@ -130,7 +130,7 @@
         </select>
 
         <!-- Sort -->
-        <select id="sortSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+        <select id="sortSelect" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm hover:border-purple-300 transition-colors">
           <option value="default">Default Sort</option>
           <option value="name">Sort by Name</option>
           <option value="price-low">Price: Low to High</option>
@@ -140,9 +140,9 @@
     </div>
   </div>
 
-  <!-- Products Section -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6">
+<!-- Products Section -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="mb-8">
       <h2 class="text-3xl font-bold gradient-text mb-2">All Products</h2>
       <p class="text-gray-600" id="productCount">Showing <%= products.length %> products</p>
     </div>
@@ -151,99 +151,107 @@
     <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <% if (products.length > 0) { %>
       <% products.forEach(function(product) { %>
-      <!-- Product Card Container -->
-      <div class="product-card rounded-xl shadow-lg overflow-hidden bg-[<%=product.panelColor%>] text-gray-900" data-category="<%= product.category ? product.category.toLowerCase() : '' %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
-
+      <% 
+        let originalPrice = product.price;
+        let discount = product.discount || 0;
+        let discountedPrice = originalPrice - (originalPrice * discount / 100);
+      %>
+      
+      <!-- Product Card -->
+      <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col group" data-category="<%= product.category ? product.category.toLowerCase() : '' %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
         <!-- Image Section -->
-        <div class="relative bg-[<%= product.bgColor %>]">
-          <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="<%= product.name %>" class="w-full h-48 object-cover" onerror="this.src='/images/placeholder.jpg'">
-
+        <div class="relative bg-gradient-to-br from-red-400 to-red-600 image-container">
+          <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="<%= product.name %>" class="product-image" onerror="this.src='/images/placeholder.jpg'">
           <!-- Discount Badge -->
           <% if (product.discount && product.discount > 0) { %>
-          <span class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold animate-pulse">
+          <span class="absolute top-3 right-3 discount-badge text-white text-xs font-bold px-2 py-1 rounded-full">
             <%= product.discount %>% OFF
           </span>
           <% } %>
         </div>
 
         <!-- Content Section -->
-        <div class="p-4 text-[<%= product.textColor %>]">
+        <div class="p-4 flex-grow flex flex-col">
           <!-- Product Name -->
-          <h3 class="text-lg font-semibold mb-2 line-clamp-2">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
             <%= product.name %>
           </h3>
 
           <!-- Product Description -->
-          <p class="text-xs mb-3 italic text-gray-700 line-clamp-2">
-            <%= product.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' %>
+          <p class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
+            <%= product.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Beautiful design perfect for any occasion.' %>
           </p>
 
-          <!-- Price and Category Section -->
-          <div class="flex items-center justify-between mb-3">
-            <!-- Price Information -->
-            <div class="flex flex-col space-y-1">
-              <% 
-      let originalPrice = product.price;
-      let discount = product.discount || 0;
-      let discountedPrice = originalPrice - (originalPrice * discount / 100);
-    %>
-
-              <!-- Current Price -->
-              <div class="flex items-center space-x-2">
-                <span class="text-2xl font-bold text-[<%= product.textColor %>]">₹<%= discountedPrice.toFixed(2) %></span>
-                
-              </div>
-
-              <!-- Original Price and Savings (Fixed Height Container) -->
-              <div class="h-5 flex items-center space-x-2">
-                <% if (discount > 0) { %>
-                <span class="text-sm line-through italic text-gray-400">₹<%= originalPrice.toFixed(2) %></span>
-                <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full">
-                  Save ₹<%= (originalPrice - discountedPrice).toFixed(2) %>
-                </span>
-                <% } else { %>
-                <!-- Empty space to maintain consistent height -->
-                <span class="invisible text-sm">₹0.00</span>
-                <% } %>
-              </div>
+          <!-- Price Section -->
+          <div class="mb-4">
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-2xl font-bold text-gray-900">₹<%= discountedPrice.toFixed(2) %></span>
             </div>
-
-            <!-- Category Badge -->
-            <% if (product.category) { %>
-            <div class="flex flex-col items-end">
-              <span class="text-xs bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 px-3 py-1.5 rounded-full font-medium border border-indigo-200">
-                <%= product.category %>
+            
+            <% if (discount > 0) { %>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-sm line-through text-gray-400">₹<%= originalPrice.toFixed(2) %></span>
+              <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                Save ₹<%= (originalPrice - discountedPrice).toFixed(2) %>
               </span>
             </div>
             <% } %>
           </div>
 
-        </div>
+          <!-- Category and Rating -->
+          <div class="flex items-center justify-between mb-4">
+            <% if (product.category) { %>
+            <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+              <%= product.category %>
+            </span>
+            <% } else { %>
+            <span class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium">
+              General
+            </span>
+            <% } %>
+            
+            <div class="flex items-center text-yellow-400">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <span class="text-xs text-gray-600 ml-1"><%= product.rating || '4.5' %></span>
+            </div>
+          </div>
 
-        <!-- Add to Cart Button -->
-        <div class="flex justify-center">
-  <button 
-    onclick="addToCart('<%= product._id %>', '<%= product.name %>', '<%= discountedPrice %>', ' <%= product.image.toString('base64') %>', '<%= product.bgColor %>', '<%= product.textColor %>', '<%= product.panelColor %>')" 
-    class="add-to-cart-btn px-6 py-2 w-full rounded-xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none transition-all duration-300"
-  >
-    🛒 Add to Cart
-  </button>
-</div>
+          <!-- Add to Cart Button -->
+          <button onclick="addToCart('<%= product._id %>', '<%= product.name %>', '<%= discountedPrice %>', '<%= product.image.toString('base64') %>', '<%= product.bgColor || '#EF4444' %>', '<%= product.textColor || '#FFFFFF' %>', '<%= product.panelColor || '#FFFFFF' %>')" class="add-to-cart-btn w-full text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
+            </svg>
+            Add to Cart
+          </button>
+        </div>
       </div>
+      <% }); %>
+      <% } else { %>
+      <!-- No Products Message -->
+      <div class="col-span-full text-center py-12">
+        <div class="text-gray-400 text-xl mb-4">
+          <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
+        <p class="text-gray-500">Check back later for new products.</p>
+      </div>
+      <% } %>
     </div>
-    <% }); %>
-    <% } else { %>
-    <!-- No Products Message -->
-    <div class="col-span-full text-center py-12">
+
+    <!-- Filtered No Products Message (Hidden by default) -->
+    <div id="noFilteredProducts" class="text-center py-12 hidden">
       <div class="text-gray-400 text-xl mb-4">
         <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2" />
         </svg>
       </div>
       <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
-      <p class="text-gray-500">Check back later for new products.</p>
+      <p class="text-gray-500">Try adjusting your search or filter criteria.</p>
     </div>
-    <% } %>
   </div>
 
   <!-- Filtered No Products Message (Hidden by default) -->
