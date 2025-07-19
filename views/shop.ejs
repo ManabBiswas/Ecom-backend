@@ -531,8 +531,8 @@
                     <p class="text-sm text-gray-600">${product.description}</p>
                     <div class="flex items-center justify-between mt-4">
                         <div>
-                            <span class="text-xl font-bold text-gray-900">$${product.price.toFixed(2)}</span>
-                            ${product.originalPrice ? `<span class="text-sm line-through text-gray-500 ml-2">$${product.originalPrice.toFixed(2)}</span>` : ''}
+                            <span class="text-xl font-bold text-gray-900">₹${product.price.toFixed(2)}</span>
+                            ${product.originalPrice ? `<span class="text-sm line-through text-gray-500 ml-2">₹${product.originalPrice.toFixed(2)}</span>` : ''}
                         </div>
                         <div class="flex items-center space-x-2">
                             ${product.badge ? `<span class="px-2 py-1 text-xs font-semibold text-white rounded-full bg-gradient-to-r from-${getBadgeColor(product.badge)}">${product.badge.charAt(0).toUpperCase() + product.badge.slice(1)}</span>` : ''}
@@ -607,7 +607,7 @@
                         <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
                         <div>
                             <h4 class="text-lg font-semibold text-gray-900">${item.name}</h4>
-                            <p class="text-sm text-gray-600">Price: $${item.price.toFixed(2)}</p>
+                            <p class="text-sm text-gray-600">Price: ₹${item.price.toFixed(2)}</p>
                             <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
                         </div>
                     </div>
@@ -617,12 +617,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
-                        <span class="text-lg font-bold text-gray-900">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <span class="text-lg font-bold text-gray-900">₹${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                 `;
                 cartItemsContainer.appendChild(cartItem);
             });
-            cartTotal.textContent = `$${total.toFixed(2)}`;
+            cartTotal.textContent = `₹${total.toFixed(2)}`;
         }
         // Remove item from cart
         function removeFromCart(productId) {

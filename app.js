@@ -4,7 +4,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
-const flash = require("flash");
+const flash = require("connect-flash");
 
 require('dotenv').config()
 
@@ -24,10 +24,21 @@ app.set("view engine", "ejs");
 
 app.use(expressSession({
     secret: process.env.SESSION_SECRET || 'fallback-secret',
-    resave: false,
-    saveUninitialized: false
+    resave: false,  //false to avoid resaving session if unmodified
+    // saveUninitialized: false, //true to save uninitialized sessions
+    saveUninitialized: false,
+    
 }));
 app.use(flash());
+
+// Make flash messages available to all views
+app.use((req, res, next) => {
+    res.locals.messages = {
+        success: req.flash('success'),
+        error: req.flash('error')
+    };
+    next();
+});
 
 app.use("/", indexRouter);
 app.use("/owners", ownerRouter);

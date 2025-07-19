@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Product</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Auto-hide flash messages after 5 seconds
+    window.addEventListener('load', () => {
+      const flashMessages = document.querySelectorAll('.animate-pulse');
+      flashMessages.forEach(msg => {
+        setTimeout(() => {
+          msg.style.transition = 'opacity 0.5s ease-out';
+          msg.style.opacity = '0';
+          setTimeout(() => msg.remove(), 500);
+        }, 5000);
+      });
+    });
+  </script>
 </head>
 
 <body class="bg-gradient-to-br from-indigo-100 to-pink-100 min-h-screen flex items-center justify-center p-6">
@@ -14,8 +27,22 @@
     <h1 class="text-4xl font-extrabold text-gray-800 text-center mb-6">
       🛍️ Create a New Product
     </h1>
+    
+    <!-- Success Message -->
+    <% if (messages && messages.success && messages.success.length > 0) { %>
+      <div class="mb-6 bg-green-100 border border-green-400 text-green-800 text-sm px-4 py-3 rounded-xl shadow animate-pulse">
+        ✅ <%= messages.success[0] %>
+      </div>
+    <% } %>
 
-    <form action="/owner/products/create" method="POST" enctype="multipart/form-data" class="space-y-6 text-gray-700">
+    <!-- Error Message -->
+    <% if (messages && messages.error && messages.error.length > 0) { %>
+      <div class="mb-6 bg-red-100 border border-red-400 text-red-800 text-sm px-4 py-3 rounded-xl shadow animate-pulse">
+        ❌ <%= messages.error[0] %>
+      </div>
+    <% } %>
+
+    <form action="/products/create" method="POST" enctype="multipart/form-data" class="space-y-6 text-gray-700">
 
       <!-- Product Name -->
       <div>
@@ -41,18 +68,32 @@
         <input type="file" name="image" id="image" required accept="image/*" class="w-full file:px-4 file:py-2 file:border file:rounded-lg file:bg-indigo-600 file:text-white file:font-semibold file:hover:bg-indigo-700" />
       </div>
 
-      <!-- Dynamic Colors -->
-      <% ["bgColor", "textColor", "panelColor"].forEach((colorName, idx) => { %>
+      <!-- Background Color -->
       <div>
-        <label for="<%= colorName %>" class="block mb-2 font-medium capitalize">
-          <%= colorName.replace("Color", " Color") %> *
-        </label>
+        <label for="bgColor" class="block mb-2 font-medium">Background Color *</label>
         <div class="flex gap-4">
-          <input type="color" name="<%= colorName %>" id="<%= colorName %>" required class="w-14 h-10 rounded-lg border border-gray-300 cursor-pointer" />
-          <input type="text" placeholder="#ffffff" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none" onchange="document.getElementById('<%= colorName %>').value = this.value" />
+          <input type="color" name="bgColor" id="bgColor" required class="w-14 h-10 rounded-lg border border-gray-300 cursor-pointer" />
+          <input type="text" placeholder="#ffffff" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none" onchange="document.getElementById('bgColor').value = this.value" />
         </div>
       </div>
-      <% }) %>
+
+      <!-- Text Color -->
+      <div>
+        <label for="textColor" class="block mb-2 font-medium">Text Color *</label>
+        <div class="flex gap-4">
+          <input type="color" name="textColor" id="textColor" required class="w-14 h-10 rounded-lg border border-gray-300 cursor-pointer" />
+          <input type="text" placeholder="#000000" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none" onchange="document.getElementById('textColor').value = this.value" />
+        </div>
+      </div>
+
+      <!-- Panel Color -->
+      <div>
+        <label for="panelColor" class="block mb-2 font-medium">Panel Color *</label>
+        <div class="flex gap-4">
+          <input type="color" name="panelColor" id="panelColor" required class="w-14 h-10 rounded-lg border border-gray-300 cursor-pointer" />
+          <input type="text" placeholder="#f0f0f0" class="flex-1 px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:outline-none" onchange="document.getElementById('panelColor').value = this.value" />
+        </div>
+      </div>
 
       <!-- Category -->
       <div>
@@ -83,6 +124,7 @@
   </div>
 
   <script>
+    // Color picker synchronization
     document.querySelectorAll('input[type="color"]').forEach(colorInput => {
       colorInput.addEventListener('change', function() {
         const textInput = this.parentElement.querySelector('input[type="text"]');
@@ -96,6 +138,23 @@
         if (colorInput && this.value.match(/^#[0-9A-F]{6}$/i)) colorInput.value = this.value;
       });
     });
+
+    // Auto-hide flash messages after 5 seconds
+    const flashMessages = document.querySelectorAll('.animate-pulse');
+    flashMessages.forEach(message => {
+      setTimeout(() => {
+        message.style.transition = 'opacity 0.5s ease-out';
+        message.style.opacity = '0';
+        setTimeout(() => {
+          message.remove();
+        }, 500);
+      }, 5000);
+    });
+
+    // Clear form after successful submission (if success message is shown)
+    <% if (messages && messages.success && messages.success.length > 0) { %>
+      document.querySelector('form').reset();
+    <% } %>
   </script>
 </body>
 

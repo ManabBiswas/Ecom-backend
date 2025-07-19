@@ -10,10 +10,8 @@ module.exports.registerUser = async (req, res) => {
         // Check if user already exists
         let existingUser = await userModel.findOne({ email: email });
         if (existingUser) {
-            return res.status(409).json({
-                success: false,
-                message: "User already exists with this email Please Login"
-            });
+            req.flash('error', 'User already exists with this email. Please Login');
+            return res.redirect('/');
         }
 
         // Hash password
@@ -41,17 +39,8 @@ module.exports.registerUser = async (req, res) => {
         // console.log("tokrn",token)
 
         console.log("User registered successfully:", user.fullName);
-        res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                location: user.location,
-                contactNo: user.contactNo
-            }
-        });
+        req.flash('success', 'Registration successful! Welcome to ShopHub!');
+        res.redirect('/shop');
 
     } catch (err) {
         console.error("Registration error:", err.message);
@@ -70,10 +59,8 @@ module.exports.loginUser = async (req, res) => {
         // Find user
         let user = await userModel.findOne({ email: email });
         if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid email or password"
-            });
+            req.flash('error', 'Invalid email or password');
+            return res.redirect('/');
         }
 
         // Check password
@@ -96,17 +83,8 @@ module.exports.loginUser = async (req, res) => {
         });
 
         console.log("User logged in successfully:", user.fullName);
-        res.status(200).json({
-            success: true,
-            message: "Login successful",
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                location: user.location,
-                contactNo: user.contactNo
-            }
-        });
+        req.flash('success', 'Login successful! Welcome back!');
+        res.redirect('/shop');
 
     } catch (err) {
         console.error("Login error:", err.message);

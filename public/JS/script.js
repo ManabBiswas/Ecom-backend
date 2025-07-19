@@ -25,58 +25,12 @@
         }
 
         // Form handling
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            try {
-                const response = await fetch('/users/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Login successful!');
-                    window.location.href = '/shop';
-                } else {
-                    alert(result.message || 'Login failed');
-                }
-            } catch (error) {
-                alert('An error occurred. Please try again.');
-            }
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.target.submit();
         });
 
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            try {
-                const response = await fetch('/users/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Registration successful!');
-                    window.location.href = '/shop';
-                } else {
-                    alert(result.message || 'Registration failed');
-                }
-            } catch (error) {
-                alert('An error occurred. Please try again.');
-            }
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.target.submit();
         });
 
         // Close modals when clicking outside

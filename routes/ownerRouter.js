@@ -5,16 +5,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-// Test route
-// router.get("/", (req, res) => {
-//     res.send("owners route is working now!");
-// });
-
+// Admin route - renders create product page
 router.get("/admin", (req, res) => {
-    res.render("createProduct");
+    // Get flash messages
+    const messages = {
+        success: req.flash('success'),
+        error: req.flash('error')
+    };
+    
+    // Debug logging
+    console.log("Flash messages:", messages);
+    
+    res.render("createProduct", { messages });
 });
-
-
 
 // Create Owner (Only one owner allowed)
 router.post("/create", async (req, res) => {
@@ -52,7 +55,7 @@ router.post("/create", async (req, res) => {
         // Generate JWT token
         const token = jwt.sign(
             { email: createdOwner.email, ownerId: createdOwner._id, role: 'owner' }, 
-            config.get('JWT_SECRET') || 'fallback-secret',
+            process.env.JWT_KEY || 'fallback-secret',
             { expiresIn: '24h' }
         );
 
@@ -116,7 +119,7 @@ router.post("/login", async (req, res) => {
         // Generate JWT token
         const token = jwt.sign(
             { email: owner.email, ownerId: owner._id, role: 'owner' }, 
-            config.get('JWT_SECRET') || 'fallback-secret',
+            process.env.JWT_KEY || 'fallback-secret',
             { expiresIn: '24h' }
         );
 
