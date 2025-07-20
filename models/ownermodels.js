@@ -22,7 +22,6 @@ const ownerSchema = mongoose.Schema({
     },
     products: {
         type: Array,
-        required: true,
         default:[],
     },
     profileImage: {

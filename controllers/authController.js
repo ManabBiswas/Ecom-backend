@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateToken } = require('../utils/generateToken');
 
+// authController.js - Simple cookie settings for development
+
 module.exports.registerUser = async (req, res) => {
     try {
         let { fullName, email, password, location, contactNo } = req.body;
@@ -30,13 +32,11 @@ module.exports.registerUser = async (req, res) => {
         // Generate JWT token
         const token = generateToken(user);
 
-        // Set cookie
+        // Simple cookie settings for development
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
-        // console.log("tokrn",token)
 
         console.log("User registered successfully:", user.fullName);
         req.flash('success', 'Registration successful! Welcome to ShopHub!');
@@ -50,7 +50,6 @@ module.exports.registerUser = async (req, res) => {
         });
     }
 }
-
 
 module.exports.loginUser = async (req, res) => {
     try {
@@ -75,10 +74,9 @@ module.exports.loginUser = async (req, res) => {
         // Generate JWT token using utility
         const token = generateToken(user);
 
-        // Set cookie
+        // Simple cookie settings for development
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 

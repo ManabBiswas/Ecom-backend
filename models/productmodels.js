@@ -7,6 +7,12 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    description: {
+        type: String,
+    },
+    rate: {
+        type: Number,
+        default: 4.5,},
     price: {
         type: Number,
         required: true,

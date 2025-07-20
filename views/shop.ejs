@@ -38,12 +38,14 @@
 
     .add-to-cart-btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .add-to-cart-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.4);
     }
 
     .toast {
@@ -140,7 +142,7 @@
     </div>
   </div>
 
-<!-- Products Section -->
+  <!-- Products Section -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
     <div class="mb-8">
       <h2 class="text-3xl font-bold gradient-text mb-2">All Products</h2>
@@ -156,11 +158,11 @@
         let discount = product.discount || 0;
         let discountedPrice = originalPrice - (originalPrice * discount / 100);
       %>
-      
+
       <!-- Product Card -->
-      <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col group" data-category="<%= product.category ? product.category.toLowerCase() : '' %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
+      <div class="product-card bg-[<%= product.panelColor %>] rounded-2xl shadow-lg overflow-hidden flex flex-col group border border-gray-200" data-category="<%= product.category.toLowerCase() %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
         <!-- Image Section -->
-        <div class="relative bg-gradient-to-br from-red-400 to-red-600 image-container">
+        <div class="relative bg-[<%= product.bgColor %>] image-container">
           <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="<%= product.name %>" class="product-image" onerror="this.src='/images/placeholder.jpg'">
           <!-- Discount Badge -->
           <% if (product.discount && product.discount > 0) { %>
@@ -171,26 +173,26 @@
         </div>
 
         <!-- Content Section -->
-        <div class="p-4 flex-grow flex flex-col">
+        <div class="p-4 flex-grow flex flex-col" style="color: <%= product.textColor %>">
           <!-- Product Name -->
-          <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+          <h3 class="text-lg font-semibold mb-2 line-clamp-2" style="color: <%= product.textColor %>">
             <%= product.name %>
           </h3>
 
           <!-- Product Description -->
-          <p class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
-            <%= product.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Beautiful design perfect for any occasion.' %>
+          <p class="text-sm mb-4 line-clamp-2 flex-grow opacity-80" style="color: <%= product.textColor %>">
+            <%= product.description %>
           </p>
 
           <!-- Price Section -->
           <div class="mb-4">
             <div class="flex items-baseline gap-2 mb-2">
-              <span class="text-2xl font-bold text-gray-900">₹<%= discountedPrice.toFixed(2) %></span>
+              <span class="text-2xl font-bold" style="color: <%= product.textColor %>">₹<%= discountedPrice.toFixed(2) %></span>
             </div>
-            
+
             <% if (discount > 0) { %>
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm line-through text-gray-400">₹<%= originalPrice.toFixed(2) %></span>
+              <span class="text-sm line-through opacity-60" style="color: <%= product.textColor %>">₹<%= originalPrice.toFixed(2) %></span>
               <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
                 Save ₹<%= (originalPrice - discountedPrice).toFixed(2) %>
               </span>
@@ -200,31 +202,30 @@
 
           <!-- Category and Rating -->
           <div class="flex items-center justify-between mb-4">
-            <% if (product.category) { %>
-            <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+            <span class="text-xs px-3 py-1 rounded-full font-medium border opacity-90" style="background-color: <%= product.textColor %>20; color: <%= product.textColor %>; border-color: <%= product.textColor %>30;">
               <%= product.category %>
             </span>
-            <% } else { %>
-            <span class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium">
-              General
-            </span>
-            <% } %>
-            
+
             <div class="flex items-center text-yellow-400">
               <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
               </svg>
-              <span class="text-xs text-gray-600 ml-1"><%= product.rating || '4.5' %></span>
+              <span class="text-xs ml-1" style="color: <%= product.textColor %>"><%= product.rate %></span>
             </div>
           </div>
 
           <!-- Add to Cart Button -->
-          <button onclick="addToCart('<%= product._id %>', '<%= product.name %>', '<%= discountedPrice %>', '<%= product.image.toString('base64') %>', '<%= product.bgColor || '#EF4444' %>', '<%= product.textColor || '#FFFFFF' %>', '<%= product.panelColor || '#FFFFFF' %>')" class="add-to-cart-btn w-full text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
-            </svg>
-            Add to Cart
-          </button>
+          <div class="flex justify-center items-center w-full">
+            <!-- adjust height as needed -->
+            <a href="/addtoCart/<%= product._id %>">
+              <button class="add-to-cart-btn flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-semibold text-white transition-all duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
+                </svg>
+                Add to Cart
+              </button>
+            </a>
+          </div>
         </div>
       </div>
       <% }); %>
@@ -264,42 +265,9 @@
     <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
     <p class="text-gray-500">Try adjusting your search or filter criteria.</p>
   </div>
-  </div>
 
   <!-- Cart Modal -->
-  <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-    <div class="glass-effect rounded-2xl max-w-2xl w-full max-h-screen overflow-y-auto" onclick="event.stopPropagation()">
-      <div class="p-6 border-b border-white/20">
-        <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold gradient-text">Shopping Cart</h2>
-          <button onclick="closeCartModal()" class="text-gray-500 hover:text-gray-700 p-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div class="p-6">
-        <div id="cartItems" class="space-y-4 mb-6">
-          <div class="text-center py-8 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
-            </svg>
-            <p class="text-lg">Your cart is empty</p>
-          </div>
-        </div>
-        <div class="border-t border-white/20 pt-6">
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-xl font-semibold">Total:</span>
-            <span id="cartTotal" class="text-2xl font-bold gradient-text">₹0.00</span>
-          </div>
-          <button onclick="checkout()" class="w-full add-to-cart-btn text-white py-3 px-6 rounded-lg font-semibold">
-            Proceed to Checkout
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Toast Container -->
   <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
