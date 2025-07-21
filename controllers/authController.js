@@ -3,8 +3,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateToken } = require('../utils/generateToken');
 
-// authController.js - Simple cookie settings for development
-
 module.exports.registerUser = async (req, res) => {
     try {
         let { fullName, email, password, location, contactNo } = req.body;
@@ -32,10 +30,23 @@ module.exports.registerUser = async (req, res) => {
         // Generate JWT token
         const token = generateToken(user);
 
-        // Simple cookie settings for development
+        // Enhanced cookie settings with debugging
+        console.log("Setting cookie for registration:", {
+            token: token.substring(0, 20) + "...",
+            userId: user._id,
+            email: user.email
+        });
+
+        // Clear any existing cookie first
+        res.clearCookie('token');
+
+        // Set cookie with explicit settings
         res.cookie('token', token, {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            secure: false, // Set to false for development (localhost)
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/' // Explicitly set path
         });
 
         console.log("User registered successfully:", user.fullName);
@@ -44,10 +55,8 @@ module.exports.registerUser = async (req, res) => {
 
     } catch (err) {
         console.error("Registration error:", err.message);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error during registration"
-        });
+        req.flash('error', 'Registration failed. Please try again.');
+        res.redirect('/');
     }
 }
 
@@ -65,19 +74,30 @@ module.exports.loginUser = async (req, res) => {
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({
-                success: false,
-                message: "Email or Password is incorrect"
-            });
+            req.flash('error', 'Invalid email or password');
+            return res.redirect('/');
         }
 
         // Generate JWT token using utility
         const token = generateToken(user);
 
-        // Simple cookie settings for development
+        // Enhanced cookie settings with debugging
+        console.log("Setting cookie for login:", {
+            token: token.substring(0, 20) + "...",
+            userId: user._id,
+            email: user.email
+        });
+
+        // Clear any existing cookie first
+        res.clearCookie('token');
+
+        // Set cookie with explicit settings
         res.cookie('token', token, {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            secure: false, // Set to false for development (localhost)
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/' // Explicitly set path
         });
 
         console.log("User logged in successfully:", user.fullName);
@@ -86,9 +106,7 @@ module.exports.loginUser = async (req, res) => {
 
     } catch (err) {
         console.error("Login error:", err.message);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error during login process. Please try again later."
-        });
+        req.flash('error', 'Login failed. Please try again.');
+        res.redirect('/');
     }
 }

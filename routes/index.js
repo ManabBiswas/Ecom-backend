@@ -7,31 +7,80 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
     let error = req.flash("error");
-    
-    res.render("index", { error });
+    let success = req.flash("success");
+
+    res.render("index", { error, success });
 });
 
-
-router.get("/shop", async (req, res) => {
-   let products = await productmodels.find()
-    res.render("shop",{products});
-    // console.log("Products fetched successfully:", products.length);
+// Apply authentication middleware to protected routes
+router.get("/shop", isLoggedIn, async (req, res) => {
+    try {
+        let products = await productmodels.find();
+        // console.log("Products fetched for shop:", products.length);
+        res.render("shop", {
+            products,
+            user: req.user,
+            messages: {
+                success: req.flash('success'),
+                error: req.flash('error')
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        req.flash("error", "Failed to load products");
+        res.redirect("/");
+    }
 });
 
-
-router.get("/cart", async (req, res) => {
-   let products = await productmodels.find()
-    res.render("cart",{products});
-    // console.log("Products fetched successfully:", products.length);
+router.get("/cart", isLoggedIn, async (req, res) => {
+    try {
+        // Populate the user's cart with product details
+        let user = await usermodels.findById(req.user._id).populate('cart');
+        console.log("Cart items fetched:", user.cart.length);
+        res.render("cart", { products: user.cart, user: req.user });
+    } catch (error) {
+        console.error("Error fetching cart:", error);
+        req.flash("error", "Failed to load cart");
+        res.redirect("/");
+    }
 });
 
+router.get("/addtoCart/:productId", isLoggedIn, async (req, res) => {
+    try {
+        // Fix: Use req.user._id instead of req.user.email
+        let user = await usermodels.findById(req.user._id);
+        console.log("User found for cart:", user.fullName);
 
-router.get("/addtoCart/:productId", async (req, res) => {
-   let user = await usermodels.findOne({user: req.user.email});
-   console.log("User found:", user);
-    user.cart.push(req.params.productId);
-    await user.save();
-    res.redirect("/shop");
+        // Check if product already exists in cart
+        if (!user.cart.includes(req.params.productId)) {
+            user.cart.push(req.params.productId);
+            await user.save();
+            req.flash("success", "Product added to cart successfully!");
+        } else {
+            req.flash("error", "Product already in cart");
+        }
+
+        res.redirect("/shop");
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+        req.flash("error", "Failed to add product to cart");
+        res.redirect("/shop");
+    }
+});
+
+// Route to remove item from cart
+router.get("/removeFromCart/:productId", isLoggedIn, async (req, res) => {
+    try {
+        let user = await usermodels.findById(req.user._id);
+        user.cart = user.cart.filter(item => item.toString() !== req.params.productId);
+        await user.save();
+        req.flash("success", "Product removed from cart");
+        res.redirect("/cart");
+    } catch (error) {
+        console.error("Error removing from cart:", error);
+        req.flash("error", "Failed to remove product from cart");
+        res.redirect("/cart");
+    }
 });
 
 module.exports = router;

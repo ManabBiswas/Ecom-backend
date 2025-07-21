@@ -30,11 +30,8 @@ router.post("/create", upload.single('image'), async (req, res) => {
     } catch (error) {
         console.error("Error creating product:", error.message);
         req.flash('error', error.message);
-        
-        // Small delay for error case too
-        setTimeout(() => {
-            res.redirect(req.headers.referer || '/products/create');
-        }, 100);
+        res.redirect("/owners/admin");
+
     }
 });
 
