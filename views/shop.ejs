@@ -37,7 +37,6 @@
     }
 
     .add-to-cart-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -78,7 +77,7 @@
   </style>
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 ">
   <!-- Navigation -->
   <nav class="glass-effect shadow-xl sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,11 +86,11 @@
           <a href="/" class="text-2xl font-bold gradient-text">ShopHub</a>
         </div>
         <div class="flex items-center gap-6">
-        <div class="hidden md:flex items-center space-x-6">
-          <a href="/" class="text-gray-600 hover:text-gray-900">Home</a>
-          <a href="/shop" class="text-gray-900 font-medium">Shop</a>
-          <a href="/about" class="text-gray-600 hover:text-gray-900">About Us</a>
-        </div>
+          <div class="hidden md:flex items-center space-x-6">
+            <a href="/" class="text-gray-600 hover:text-gray-900">Home</a>
+            <a href="/shop" class="text-gray-900 font-medium">Shop</a>
+            <a href="/about" class="text-gray-600 hover:text-gray-900">About Us</a>
+          </div>
           <!-- Cart Button -->
           <a href="/cart" class="relative flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 transition">
             <span class="md:block hidden mr-2 font-medium">Go to Cart</span>
@@ -133,152 +132,166 @@
   <% } %>
   <!-- Search and Filter Section -->
   <!-- Search and Filter Section -->
-<div class="glass-effect shadow-lg border-b border-white/20 mb-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col lg:flex-row gap-6 items-start justify-between">
-      
-      <!-- Search Bar (50%) -->
-      <div class="w-full lg:w-1/2 relative">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+  <div class="glass-effect shadow-lg border-b border-white/20 mb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col lg:flex-row gap-6 items-start justify-between">
+
+        <!-- Search Bar (50%) -->
+        <div class="w-full lg:w-1/2 relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input type="text" id="searchInput" placeholder="Search products..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition duration-300 hover:border-purple-400" />
         </div>
-        <input type="text" id="searchInput"
-               placeholder="Search products..."
-               class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition duration-300 hover:border-purple-400" />
-      </div>
 
-      
-      <!-- Filters  -->
-      <div class="lg:w-1/2 flex w-full sm:flex-row gap-4">
-        <!-- Category Filter -->
-        <select id="categoryFilter"
-                class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
-          <option value="all">All Categories</option>
-          <option value="electronics">Electronics</option>
-          <option value="fashion">Fashion</option>
-          <option value="home">Home & Garden</option>
-          <option value="books">Books</option>
-          <option value="sports">Sports</option>
-        </select>
 
-        <!-- Sort Filter -->
-        <select id="sortSelect"
-                class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
-          <option value="default">Default Sort</option>
-          <option value="name">Sort by Name</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-        </select>
-      </div>
+        <!-- Filters  -->
+        <div class="lg:w-1/2 flex w-full sm:flex-row gap-4">
+          <!-- Category Filter -->
+          <select id="categoryFilter" class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
+            <option value="">Select category</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="home">Home & Garden</option>
+            <option value="books">Books</option>
+            <option value="sports">Sports & Outdoors</option>
+            <option value="toys">Toys & Games</option>
+            <option value="beauty">Beauty & Personal Care</option>
+            <option value="automotive">Automotive</option>
+            <option value="food">Food & Beverages</option>
+            <option value="other">Other</option>
+          </select>
 
-    </div
-  </div>
-</div>
+          <!-- Sort Filter -->
+          <select id="sortSelect" class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
+            <option value="default">Default Sort</option>
+            <option value="name">Sort by Name</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+        </div>
 
-  <!-- Products Section -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-    <div class="mb-8">
-      <h2 class="text-3xl font-bold gradient-text mb-2">All Products</h2>
-      <p class="text-gray-600" id="productCount">Showing <%= products.length %> products</p>
+      </div </div>
     </div>
 
-    <!-- Product Grid -->
-    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <% if (products.length > 0) { %>
-      <% products.forEach(function(product) { %>
-      <% 
+    <!-- Products Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <!-- Header -->
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold gradient-text mb-2">All Products</h2>
+        <p class="text-gray-600" id="productCount">Showing <%= products.length %> products</p>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <% if (products.length > 0) { %>
+        <% products.forEach(function(product) { 
         let originalPrice = product.price;
         let discount = product.discount || 0;
         let discountedPrice = originalPrice - (originalPrice * discount / 100);
       %>
 
-      <!-- Product Card -->
-      <div class="product-card bg-[<%= product.panelColor %>] rounded-2xl shadow-lg overflow-hidden flex flex-col group border border-gray-200" data-category="<%= product.category.toLowerCase() %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
-        <!-- Image Section -->
-        <div class="relative bg-[<%= product.bgColor %>] image-container">
-          <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="<%= product.name %>" class="product-image" onerror="this.src='/images/placeholder.jpg'">
-          <!-- Discount Badge -->
-          <% if (product.discount && product.discount > 0) { %>
-          <span class="absolute top-3 right-3 discount-badge text-white text-xs font-bold px-2 py-1 rounded-full">
-            <%= product.discount %>% OFF
-          </span>
-          <% } %>
-        </div>
+        <!-- Product Card -->
+        <div class="product-card mx-auto w-78 sm:w-full h-120 bg-[<%= product.panelColor %>] rounded-2xl shadow-lg overflow-hidden flex flex-col group border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-500" data-category="<%= product.category.toLowerCase() %>" data-name="<%= product.name.toLowerCase() %>" data-price="<%= product.price %>">
 
-        <!-- Content Section -->
-        <div class="p-4 flex-grow flex flex-col" style="color: <%= product.textColor %>">
-          <!-- Product Name -->
-          <h3 class="text-lg font-semibold mb-2 line-clamp-2" style="color: <%= product.textColor %>">
-            <%= product.name %>
-          </h3>
+          <!-- Image Section -->
+          <div class="relative w-full aspect-[4/3] sm:aspect-[5/4] lg:aspect-[3/2] bg-[<%= product.bgColor %>] rounded-t-2xl overflow-hidden">
+            <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="Image of <%= product.name %>" onerror="this.src='/images/placeholder.jpg'" class="absolute inset-0 w-full h-full object-cover sm:object-contain rounded-t-2xl transition-transform duration-300 group-hover:scale-105" />
 
-          <!-- Product Description -->
-          <p class="text-sm mb-4 line-clamp-2 flex-grow opacity-80" style="color: <%= product.textColor %>">
-            <%= product.description %>
-          </p>
-
-          <!-- Price Section -->
-          <div class="mb-4">
-            <div class="flex items-baseline gap-2 mb-2">
-              <span class="text-2xl font-bold" style="color: <%= product.textColor %>">₹<%= discountedPrice.toFixed(2) %></span>
-            </div>
-
-            <% if (discount > 0) { %>
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm line-through opacity-60" style="color: <%= product.textColor %>">₹<%= originalPrice.toFixed(2) %></span>
-              <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                Save ₹<%= (originalPrice - discountedPrice).toFixed(2) %>
-              </span>
-            </div>
+            <!--discount tag-->
+            <% if (product.discount && product.discount > 0) { %>
+            <span class="absolute top-3 right-3 discount-badge text-white text-xs font-bold px-2 py-1 rounded-full">
+              <%= product.discount %>% OFF
+            </span>
             <% } %>
           </div>
 
-          <!-- Category and Rating -->
-          <div class="flex items-center justify-between mb-4">
-            <span class="text-xs px-3 py-1 rounded-full font-medium border opacity-90" style="background-color: <%= product.textColor %>20; color: <%= product.textColor %>; border-color: <%= product.textColor %>30;">
-              <%= product.category %>
-            </span>
+          <!-- Content Section -->
+          <div class="flex-grow flex flex-col justify-between p-3 sm:p-4 lg:p-6 text-[<%= product.textColor %>] transition-all duration-300">
+            <div class="">
+              <!-- Product Title -->
+              <h3 class="text-lg sm:text-xl lg:text-2xl font-extrabold mb-0.5 sm:mb-1 line-clamp-2 leading-tight tracking-tight">
+                <%= product.name %>
+              </h3>
+<hr/>
+              <!-- Product Description -->
+              <p class="italic text-xs sm:text-sm lg:text-base opacity-75 mb-0.5 sm:mb-1 lg:mb-2 line-clamp-4 sm:line-clamp-3 leading-relaxed">
+                <%= product.description %>
+              </p>
+            </div>
 
-            <div class="flex items-center text-yellow-400">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-              </svg>
-              <span class="text-xs ml-1" style="color: <%= product.textColor %>"><%= product.rate %></span>
+            <!-- Price Section with Enhanced Design -->
+            <div class="mb-1 sm:mb-2 lg:mb-3">
+              <div class="flex items-end gap-2">
+                <span class="text-base sm:text-lg lg:text-xl font-black text-[<%= product.textColor %>]">
+                  ₹<%= discountedPrice.toFixed(2) %>
+                </span>
+                <% if (discount > 0) { %>
+                <span class="italic text-xs sm:text-sm line-through opacity-50 text-[<%= product.textColor %>]">
+                  ₹<%= originalPrice.toFixed(2) %>
+                </span>
+                <% } %>
+              </div>
+
+              
+            </div>
+
+            <!-- Category & Rating with Modern Design -->
+            <div class="flex items-center justify-between mb-1 sm:mb-2 gap-2">
+              <span class="inline-flex items-center text-xs sm:text-sm px-3 py-1.5 rounded-full font-semibold border-2 transition-all duration-200 hover:scale-105" style="background: linear-gradient(135deg, <%= product.textColor %>15, <%= product.textColor %>25); 
+                 color: <%= product.textColor %>; 
+                 border-color: <%= product.textColor %>40;">
+                <%= product.category %>
+              </span>
+
+              <div class="flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-lg">
+                <svg class="w-4 h-4 fill-amber-400" viewBox="0 0 20 20">
+                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                </svg>
+                <span class="text-xs sm:text-sm font-semibold text-amber-700">
+                  <%= product.rate %>
+                </span>
+              </div>
+            </div>
+
+            <!-- Add to Cart -->
+            <div class="mt-2">
+              <a href="/addtoCart/<%= product._id %>">
+                <button class="add-to-cart-btn w-full py-3 px-5 bg-[<%= product.textColor %>90] text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
+                  </svg>
+                  Add to Cart
+                </button>
+              </a>
             </div>
           </div>
-
-          <!-- Add to Cart Button -->
-          <div class="flex justify-center items-center w-full">
-            <!-- adjust height as needed -->
-            <a href="/addtoCart/<%= product._id %>">
-              <button class="add-to-cart-btn flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-semibold text-white transition-all duration-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
-                </svg>
-                Add to Cart
-              </button>
-            </a>
-          </div>
         </div>
-      </div>
-      <% }); %>
-      <% } else { %>
-      <!-- No Products Message -->
-      <div class="col-span-full text-center py-12">
-        <div class="text-gray-400 text-xl mb-4">
+
+        <% }); %>
+        <% } else { %>
+        <!-- No Products Message -->
+        <div class="col-span-full text-center py-12 text-gray-500">
           <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2" />
           </svg>
+          <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
+          <p>Check back later for new products.</p>
         </div>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
-        <p class="text-gray-500">Check back later for new products.</p>
+        <% } %>
       </div>
-      <% } %>
-    </div>
 
+      <!-- Filtered No Products Message -->
+      <div id="noFilteredProducts" class="text-center py-12 hidden text-gray-500">
+        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2" />
+        </svg>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
+        <p>Try adjusting your search or filter criteria.</p>
+      </div>
+    </div>
     <!-- Filtered No Products Message (Hidden by default) -->
     <div id="noFilteredProducts" class="text-center py-12 hidden">
       <div class="text-gray-400 text-xl mb-4">
@@ -289,27 +302,15 @@
       <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
       <p class="text-gray-500">Try adjusting your search or filter criteria.</p>
     </div>
-  </div>
 
-  <!-- Filtered No Products Message (Hidden by default) -->
-  <div id="noFilteredProducts" class="text-center py-12 hidden">
-    <div class="text-gray-400 text-xl mb-4">
-      <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2" />
-      </svg>
-    </div>
-    <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
-    <p class="text-gray-500">Try adjusting your search or filter criteria.</p>
-  </div>
-
-  <!-- Cart Modal -->
+    <!-- Cart Modal -->
 
 
-  <!-- Toast Container -->
-  <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
 
-  <!-- Include external JavaScript file -->
-  <script src="../public/JS/shop.js"></script>
+    <!-- Include external JavaScript file -->
+    <script src="../public/JS/shop.js"></script>
 </body>
 
 </html>
