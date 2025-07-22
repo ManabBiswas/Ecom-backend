@@ -43,66 +43,154 @@
       <!-- Cart Items Section -->
       <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div class="p-6 border-b border-gray-100">
+          <div class="p-6 border-b border-gray-100 flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-900">Cart Items</h2>
+            <span class="text-sm text-gray-500">(<%= products.length %> items)</span>
           </div>
           
           <div class="divide-y divide-gray-100">
             <% products.forEach(product => { %>
-            <div class="p-6 hover:bg-gray-50 transition-colors">
-              <div class="flex flex-col sm:flex-row gap-4">
+            <div class="p-6 hover:bg-gray-50/80 transition-all duration-200" style="background-color: <%= product.bgColor %>10;">
+              <div class="flex flex-row gap-6">
                 <!-- Product Image -->
-                <div class="flex-shrink-0">
-                  <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gray-100">
+                <div class="flex-shrink-0 mx-auto md:mx-0">
+                  <div class="relative w-40 h-40 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" 
+                       style="background-color: <%= product.panelColor %>;">
                     <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" 
                          alt="<%= product.name %>" 
-                         class="w-full h-full object-cover">
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                   </div>
                 </div>
 
                 <!-- Product Details -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex flex-col sm:flex-row justify-between gap-4">
-                    <div class="flex-1">
-                      <h3 class="text-lg font-semibold text-gray-900 mb-1"><%= product.name %></h3>
-                      <div class="flex items-center gap-3 mb-3">
-                        <span class="text-xl font-bold text-gray-900">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></span>
-                        <% if (product.discount > 0) { %>
-                        <span class="text-sm text-gray-500 line-through">₹<%= product.price %></span>
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                          <%= product.discount %>% OFF
-                        </span>
+                <div class="flex-1 flex flex-col justify-between md:min-h-[10rem]"> 
+                  <div class="space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                      <div class="flex-1 space-y-3">
+                        <div class="flex items-start justify-between">
+                          <h3 class="text-lg md:text-xl font-semibold hover:text-blue-600 transition-colors line-clamp-2" 
+                              style="color: <%= product.textColor %>;">
+                            <%= product.name %>
+                          </h3>
+                          <!-- Remove Button - Moved to top right on mobile -->
+                          <div class="flex-shrink-0 md:hidden">
+                            <a href="/removeFromCart/<%= product._id %>" 
+                               class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border border-gray-200 hover:border-red-200">
+                              <svg class="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+                        
+                        <% if (product.description) { %>
+                        <p class="text-sm text-gray-600 line-clamp-2"><%= product.description %></p>
                         <% } %>
+                        
+                        <!-- Rating -->
+                        <div class="flex items-center gap-2">
+                          <div class="flex items-center">
+                            <% for(let i = 0; i < 5; i++) { %>
+                              <% if(i < Math.floor(product.rate)) { %>
+                                <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                              <% } else if(i < product.rate) { %>
+                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                  <defs>
+                                    <linearGradient id="half-<%= i %>">
+                                      <stop offset="50%" stop-color="currentColor"/>
+                                      <stop offset="50%" stop-color="transparent"/>
+                                    </linearGradient>
+                                  </defs>
+                                  <path fill="url(#half-<%= i %>)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                              <% } else { %>
+                                <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                              <% } %>
+                            <% } %>
+                            <span class="ml-2 text-sm text-gray-600">(<%= product.rate %>)</span>
+                          </div>
+                        </div>
+                        <!-- Price and Category Info -->
+                        <div class="space-y-3">
+                          <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-2xl font-bold" style="color: <%= product.textColor %>;">
+                              ₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %>
+                            </span>
+                            <% if (product.discount > 0) { %>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm text-gray-500 line-through">₹<%= product.price %></span>
+                              <span class="px-3 py-1 text-white text-sm font-medium rounded-full shadow-sm"
+                                    style="background-color: <%= product.bgColor %>;">
+                                <%= product.discount %>% OFF
+                              </span>
+                            </div>
+                            <% } %>
+                          </div>
+                          
+                          <% if (product.category) { %>
+                          <div class="flex flex-wrap gap-2">
+                            <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-lg"
+                                  style="background-color: <%= product.panelColor %>20; color: <%= product.textColor %>;">
+                              <%= product.category %>
+                            </span>
+                          </div>
+                          <% } %>
+                        </div>
                       </div>
-                      
+
+                      <!-- Remove Button - Hidden on mobile, shown on desktop -->
+                      <div class="hidden md:block flex-shrink-0">
+                        <a href="/removeFromCart/<%= product._id %>" 
+                           class="group inline-flex items-center justify-center w-11 h-11 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border border-gray-200 hover:border-red-200">
+                          <svg class="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <!-- Quantity and Delivery Info -->
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-4 border-t" style="border-color: <%= product.bgColor %>20;">
                       <!-- Quantity Controls -->
                       <div class="flex items-center gap-3">
-                        <div class="flex items-center border border-gray-200 rounded-lg">
+                        <span class="text-sm font-medium" style="color: <%= product.textColor %>;">Quantity:</span>
+                        <div class="flex items-center border rounded-lg shadow-sm" 
+                             style="border-color: <%= product.bgColor %>;">
                           <button onclick="updateQuantity('<%= product._id %>', 'decrease')" 
-                                  class="p-2 hover:bg-gray-100 transition-colors">
+                                  class="p-2.5 hover:opacity-80 active:opacity-60 transition-opacity duration-150 rounded-l-lg"
+                                  style="background-color: <%= product.panelColor %>; color: <%= product.textColor %>;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                             </svg>
                           </button>
-                          <span class="px-4 py-2 text-sm font-medium" id="qty-<%= product._id %>">01</span>
+                          <span class="w-12 text-center py-2 text-sm font-semibold border-x" 
+                                style="border-color: <%= product.bgColor %>; color: <%= product.textColor %>;" 
+                                id="qty-<%= product._id %>">01</span>
                           <button onclick="updateQuantity('<%= product._id %>', 'increase')" 
-                                  class="p-2 hover:bg-gray-100 transition-colors">
+                                  class="p-2.5 hover:opacity-80 active:opacity-60 transition-opacity duration-150 rounded-r-lg"
+                                  style="background-color: <%= product.panelColor %>; color: <%= product.textColor %>;">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
                           </button>
                         </div>
                       </div>
-                    </div>
 
-                    <!-- Remove Button -->
-                    <div class="flex-shrink-0">
-                      <a href="/removeFromCart/<%= product._id %>" 
-                         class="inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </a>
+                      <!-- Delivery Info -->
+                      <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg" 
+                             style="color: <%= product.textColor %>; background-color: <%= product.panelColor %>10;">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                          </svg>
+                          <span>Delivery in 2-3 business days</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -175,29 +263,7 @@
     <% } %>
   </div>
 
-  <script>
-    function updateQuantity(productId, action) {
-      const qtyElement = document.getElementById('qty-' + productId);
-      let currentQty = parseInt(qtyElement.textContent);
-      
-      if (action === 'increase') {
-        currentQty += 1;
-      } else if (action === 'decrease' && currentQty > 1) {
-        currentQty -= 1;
-      }
-      
-      qtyElement.textContent = currentQty.toString().padStart(2, '0');
-      
-      // Here you would typically make an AJAX call to update the quantity on the server
-      // updateCartQuantity(productId, currentQty);
-    }
-    
-    function proceedToCheckout() {
-      // You can implement the checkout logic here
-      alert('Proceeding to checkout...');
-      // Redirect to checkout page or show checkout modal
-    }
-  </script>
+  <script src="/JS/cart.js"></script>
 </body>
 
 </html>

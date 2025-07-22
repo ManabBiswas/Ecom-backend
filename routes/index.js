@@ -36,7 +36,7 @@ router.get("/cart", isLoggedIn, async (req, res) => {
     try {
         // Populate the user's cart with product details
         let user = await usermodels.findById(req.user._id).populate('cart');
-        console.log("Cart items fetched:", user.cart.length);
+        // console.log("Cart items fetched:", user.cart.length);
         res.render("cart", { products: user.cart, user: req.user });
     } catch (error) {
         console.error("Error fetching cart:", error);
