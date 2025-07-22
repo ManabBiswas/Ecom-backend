@@ -1,49 +1,87 @@
-        // Modal functions
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginModal').classList.add('flex');
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    // Set current year in footer
+    const yearSpan = document.getElementById('currentYear');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+    // console.log("year loaded");
 
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.add('hidden');
-            document.getElementById('loginModal').classList.remove('flex');
-        }
-
-        function openRegisterModal() {
-            document.getElementById('registerModal').classList.remove('hidden');
-            document.getElementById('registerModal').classList.add('flex');
-        }
-
-        function closeRegisterModal() {
-            document.getElementById('registerModal').classList.add('hidden');
-            document.getElementById('registerModal').classList.remove('flex');
-        }
-
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Form handling
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+    // Form event listeners with null checks
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
             e.target.submit();
         });
+    }
 
-        document.getElementById('registerForm').addEventListener('submit', (e) => {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
             e.target.submit();
         });
+    }
 
-        // Close modals when clicking outside
-        document.getElementById('loginModal').addEventListener('click', (e) => {
+    // Modal event listeners with null checks
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.addEventListener('click', (e) => {
             if (e.target.id === 'loginModal') {
                 closeLoginModal();
             }
         });
+    }
 
-        document.getElementById('registerModal').addEventListener('click', (e) => {
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+        registerModal.addEventListener('click', (e) => {
             if (e.target.id === 'registerModal') {
                 closeRegisterModal();
             }
         });
-        // Set current year in footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    }
+});
+
+// Modal functions (keep these outside DOMContentLoaded so they're globally accessible)
+function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // console.log("openlogin loaded");
+    }
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        // console.log("closelogin loaded");
+    }
+}
+
+function openRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // console.log("openregister loaded");
+    }
+}
+
+function closeRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        // console.log("closereg loaded");
+    }
+}
+
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+        // console.log("opentoggleloaded");
+    }
+}

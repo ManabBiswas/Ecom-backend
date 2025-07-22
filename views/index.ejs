@@ -100,40 +100,55 @@
 
     /* Particle Effect */
     .bubble {
-  position: absolute;
-  bottom: -10vh;
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), transparent 70%);
-  border-radius: 50%;
-  filter: blur(1px);
-  animation: bubbleRise 15s ease-in-out infinite;
-  pointer-events: none;
-}
+      position: absolute;
+      bottom: -10vh;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), transparent 70%);
+      border-radius: 50%;
+      filter: blur(1px);
+      animation: bubbleRise 15s ease-in-out infinite;
+      pointer-events: none;
+    }
 
-/* Random sizes via nth-child */
-.bubble:nth-child(2n) { width: 8px; height: 8px; }
-.bubble:nth-child(3n) { width: 12px; height: 12px; filter: blur(2px); }
-.bubble:nth-child(4n) { width: 6px; height: 6px; }
+    /* Random sizes via nth-child */
+    .bubble:nth-child(2n) {
+      width: 8px;
+      height: 8px;
+    }
 
-/* Bubbling animation */
-@keyframes bubbleRise {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-50vh) scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateY(-120vh) scale(1);
-    opacity: 0;
-  }
-}
+    .bubble:nth-child(3n) {
+      width: 12px;
+      height: 12px;
+      filter: blur(2px);
+    }
+
+    .bubble:nth-child(4n) {
+      width: 6px;
+      height: 6px;
+    }
+
+    /* Bubbling animation */
+    @keyframes bubbleRise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      50% {
+        transform: translateY(-50vh) scale(1.2);
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translateY(-120vh) scale(1);
+        opacity: 0;
+      }
+    }
 
     @keyframes particleFloat {
       0% {
@@ -204,20 +219,20 @@
 
 <body class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen overflow-x-hidden">
   <!-- Floating Particles Background -->
-<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-  <div class="bubble" style="left: 10%; animation-delay: 0s;"></div>
-  <div class="bubble" style="left: 20%; animation-delay: 2s;"></div>
-  <div class="bubble" style="left: 30%; animation-delay: 4s;"></div>
-  <div class="bubble" style="left: 40%; animation-delay: 6s;"></div>
-  <div class="bubble" style="left: 50%; animation-delay: 8s;"></div>
-  <div class="bubble" style="left: 60%; animation-delay: 10s;"></div>
-  <div class="bubble" style="left: 70%; animation-delay: 12s;"></div>
-  <div class="bubble" style="left: 80%; animation-delay: 14s;"></div>
-  <div class="bubble" style="left: 90%; animation-delay: 16s;"></div>
-</div>
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="bubble" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="bubble" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="bubble" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="bubble" style="left: 50%; animation-delay: 8s;"></div>
+    <div class="bubble" style="left: 60%; animation-delay: 10s;"></div>
+    <div class="bubble" style="left: 70%; animation-delay: 12s;"></div>
+    <div class="bubble" style="left: 80%; animation-delay: 14s;"></div>
+    <div class="bubble" style="left: 90%; animation-delay: 16s;"></div>
+  </div>
 
   <!-- Navigation -->
-  <nav class="fixed top-0 left-0 w-full z-50 bg-white/30 backdrop-blur-lg border-b border-white/20">
+  <nav class="fixed top-0 left-0 w-full z-50 bg-white/30 backdrop-blur-lg border-b border-white/20 rounded-b-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-20">
 
@@ -234,7 +249,7 @@
           <a href="/shop" class="text-sm font-medium text-slate-700 hover:text-indigo-600 transition">Shop</a>
           <a href="/about" class="text-sm font-medium text-slate-700 hover:text-indigo-600 transition">About</a>
           <a href="/contact" class="text-sm font-medium text-slate-700 hover:text-indigo-600 transition">Contact</a>
-          <button onclick="openLoginModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600 border border-slate-300 rounded-full transition-all">
+          <button onclick="openLoginModal()" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-indigo-600 border-2 border-double border-slate-300 hover:border-indigo-600 rounded-full transition-all">
             Login
           </button>
           <button onclick="openRegisterModal()" class="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-full transition-shadow shadow-sm hover:shadow-lg">
@@ -254,14 +269,14 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden backdrop-blur-lg bg-white/30 border-t border-white/20">
+    <div id="mobileMenu" class="hidden md:hidden backdrop-blur-lg bg-white/30 border-t border-white/20 rounded-b-xl">
       <div class="px-4 py-6 space-y-4 text-base font-semibold">
-        <a href="/" class="block text-slate-700 hover:text-indigo-600 transition">Home</a>
-        <a href="/shop" class="block text-slate-700 hover:text-indigo-600 transition">Shop</a>
-        <a href="/about" class="block text-slate-700 hover:text-indigo-600 transition">About</a>
-        <a href="/contact" class="block text-slate-700 hover:text-indigo-600 transition">Contact</a>
-        <div class="pt-4 border-t border-white/20 space-y-3">
-          <button onclick="openLoginModal()" class="w-full px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600 border border-slate-300 rounded-full transition text-left">
+        <a href="/" class="pl-4 block text-slate-700 hover:text-indigo-600 transition">Home</a>
+        <a href="/shop" class="pl-4 block text-slate-700 hover:text-indigo-600 transition">Shop</a>
+        <a href="/about" class="pl-4 block text-slate-700 hover:text-indigo-600 transition">About</a>
+        <a href="/contact" class="pl-4 block text-slate-700 hover:text-indigo-600 transition">Contact</a>
+        <div class="pt-4 border-t-2 border-indigo-600/20 space-y-1">
+          <button onclick="openLoginModal()" class="w-full px-4 py-2 text-sm font-semibold text-slate-700 hover:text-indigo-600 border-2 border-double border-slate-300 hover:border-indigo-600  rounded-full transition text-left">
             Login
           </button>
           <button onclick="openRegisterModal()" class="w-full px-4 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-full transition-shadow shadow-sm hover:shadow-lg text-left">
@@ -447,7 +462,8 @@
   </footer>
 
   <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div id="loginModal" class="fixed inset-0 hidden items-center justify-center z-50 backdrop-blur-sm bg-white/10 border border-blue-500/20 rounded-xl shadow-xl transition-all duration-500
+">
     <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Login</h2>
@@ -457,7 +473,7 @@
           </svg>
         </button>
       </div>
-<form action="/users/login" method="POST">
+      <form action="/users/login" method="POST">
         <div class="mb-4">
           <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
           <input type="email" id="loginEmail" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -471,13 +487,14 @@
         </button>
       </form>
       <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600">Don't have an account? <button onclick="closeLoginModal(); openRegisterModal()" class="text-blue-600 hover:text-blue-700">Sign up</button></p>
+        <p class="text-sm text-gray-600">Don't have an account?<button onclick="closeLoginModal(); openRegisterModal()" class="text-blue-600 hover:text-blue-700">Sign up</button></p>
       </div>
     </div>
   </div>
 
   <!-- Register Modal -->
-  <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div id="registerModal" class="fixed inset-0 hidden items-center justify-center z-50 backdrop-blur-sm bg-white/10 border border-blue-500/20 rounded-xl shadow-xl transition-all duration-500
+">
     <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Sign Up</h2>
@@ -513,10 +530,11 @@
         </button>
       </form>
       <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600">Already have an account? <button onclick="openLoginModal()" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button></p>
+        <p class="text-sm text-gray-600">Already have an account?<button onclick="closeRegisterModal();openLoginModal()" class="text-blue-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</button></p>
       </div>
     </div>
   </div>
+
 
   <script src="/JS/script.js"></script>
 </body>
