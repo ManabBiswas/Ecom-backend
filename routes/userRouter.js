@@ -22,10 +22,7 @@ router.post("/login",loginUser);
 // User Logout
 router.get("/logout", (req, res) => {
     res.clearCookie('token');
-    res.status(200).json({ 
-        success: true, 
-        message: "Logout successful" 
-    });
+    res.status(200).redirect("/");
 });
 
 module.exports = router;

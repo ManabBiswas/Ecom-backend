@@ -86,20 +86,25 @@
         <div class="flex items-center">
           <a href="/" class="text-2xl font-bold gradient-text">ShopHub</a>
         </div>
+        <div class="flex items-center gap-6">
         <div class="hidden md:flex items-center space-x-6">
           <a href="/" class="text-gray-600 hover:text-gray-900">Home</a>
           <a href="/shop" class="text-gray-900 font-medium">Shop</a>
-          <a href="/about" class="text-gray-600 hover:text-gray-900">About</a>
-          <a href="/contact" class="text-gray-600 hover:text-gray-900">Contact</a>
+          <a href="/about" class="text-gray-600 hover:text-gray-900">About Us</a>
         </div>
-        <div class="flex items-center space-x-4">
-          <button onclick="openCartModal()" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <!-- Cart Button -->
+          <a href="/cart" class="relative flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 transition">
+            <span class="md:block hidden mr-2 font-medium">Go to Cart</span>
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
             </svg>
-            <span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-          </button>
-          <a href="/users/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+            <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center scale-0 transition-transform duration-200">
+              0
+            </span>
+          </a>
+
+          <!-- Logout Button -->
+          <a href="/users/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
             Logout
           </a>
         </div>
@@ -127,21 +132,30 @@
   </div>
   <% } %>
   <!-- Search and Filter Section -->
-  <div class="glass-effect shadow-lg border-b border-white/20 mb-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex flex-col md:flex-row gap-6 items-center">
-        <!-- Search Bar -->
-        <div class="relative flex-1 max-w-md w-full">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input type="text" id="searchInput" placeholder="Search products..." class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm hover:border-purple-300 transition-colors">
+  <!-- Search and Filter Section -->
+<div class="glass-effect shadow-lg border-b border-white/20 mb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-6 items-start justify-between">
+      
+      <!-- Search Bar (50%) -->
+      <div class="w-full lg:w-1/2 relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
+        <input type="text" id="searchInput"
+               placeholder="Search products..."
+               class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition duration-300 hover:border-purple-400" />
+      </div>
 
+      
+      <!-- Filters  -->
+      <div class="lg:w-1/2 flex w-full sm:flex-row gap-4">
         <!-- Category Filter -->
-        <select id="categoryFilter" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm hover:border-purple-300 transition-colors">
+        <select id="categoryFilter"
+                class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
           <option value="all">All Categories</option>
           <option value="electronics">Electronics</option>
           <option value="fashion">Fashion</option>
@@ -150,16 +164,19 @@
           <option value="sports">Sports</option>
         </select>
 
-        <!-- Sort -->
-        <select id="sortSelect" class="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm hover:border-purple-300 transition-colors">
+        <!-- Sort Filter -->
+        <select id="sortSelect"
+                class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
           <option value="default">Default Sort</option>
           <option value="name">Sort by Name</option>
           <option value="price-low">Price: Low to High</option>
           <option value="price-high">Price: High to Low</option>
         </select>
       </div>
-    </div>
+
+    </div
   </div>
+</div>
 
   <!-- Products Section -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">

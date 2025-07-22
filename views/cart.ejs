@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart - ShopHub</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="/CSS/style.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Your Shopping Cart</h1>
+      <a href="/shop" class="text-blue-600 hover:text-blue-800 flex items-center gap-2 font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Continue Shopping
+      </a>
+    </header>
+
+    <% if (!products || products.length === 0) { %>
+    <!-- Empty Cart State -->
+    <div class="bg-white rounded-2xl shadow-sm p-8">
+      <div class="text-center py-16">
+        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
+        </svg>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
+        <p class="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
+        <a href="/shop" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+          Start Shopping
+        </a>
+      </div>
+    </div>
+    <% } else { %>
+    
+    <!-- Main Cart Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Cart Items Section -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div class="p-6 border-b border-gray-100">
+            <h2 class="text-xl font-semibold text-gray-900">Cart Items</h2>
+          </div>
+          
+          <div class="divide-y divide-gray-100">
+            <% products.forEach(product => { %>
+            <div class="p-6 hover:bg-gray-50 transition-colors">
+              <div class="flex flex-col sm:flex-row gap-4">
+                <!-- Product Image -->
+                <div class="flex-shrink-0">
+                  <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gray-100">
+                    <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" 
+                         alt="<%= product.name %>" 
+                         class="w-full h-full object-cover">
+                  </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col sm:flex-row justify-between gap-4">
+                    <div class="flex-1">
+                      <h3 class="text-lg font-semibold text-gray-900 mb-1"><%= product.name %></h3>
+                      <div class="flex items-center gap-3 mb-3">
+                        <span class="text-xl font-bold text-gray-900">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></span>
+                        <% if (product.discount > 0) { %>
+                        <span class="text-sm text-gray-500 line-through">₹<%= product.price %></span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          <%= product.discount %>% OFF
+                        </span>
+                        <% } %>
+                      </div>
+                      
+                      <!-- Quantity Controls -->
+                      <div class="flex items-center gap-3">
+                        <div class="flex items-center border border-gray-200 rounded-lg">
+                          <button onclick="updateQuantity('<%= product._id %>', 'decrease')" 
+                                  class="p-2 hover:bg-gray-100 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span class="px-4 py-2 text-sm font-medium" id="qty-<%= product._id %>">01</span>
+                          <button onclick="updateQuantity('<%= product._id %>', 'increase')" 
+                                  class="p-2 hover:bg-gray-100 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <div class="flex-shrink-0">
+                      <a href="/removeFromCart/<%= product._id %>" 
+                         class="inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price Breakdown Section -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-sm sticky top-8">
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Price Breakdown</h2>
+            
+            <div class="space-y-4 mb-6">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Total MRP</span>
+                <span class="font-medium">₹<%= products.reduce((total, product) => total + product.price, 0).toFixed(2) %></span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Discount on MRP</span>
+                <span class="font-medium text-green-600">
+                  -₹<%= products.reduce((total, product) => total + (product.price * product.discount / 100), 0).toFixed(2) %>
+                </span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Platform Fee</span>
+                <span class="font-medium">₹20</span>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Shipping Fee</span>
+                <span class="font-medium text-green-600">FREE</span>
+              </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4 mb-6">
+              <div class="flex justify-between items-center">
+                <span class="text-lg font-semibold text-gray-900">Total Amount</span>
+                <span class="text-xl font-bold text-green-600">
+                  ₹<%= (products.reduce((total, product) => {
+                      const price = product.price * (1 - product.discount/100);
+                      return total + price;
+                  }, 0) + 20).toFixed(2) %>
+                </span>
+              </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button onclick="proceedToCheckout()" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              Proceed to Checkout
+            </button>
+            
+            <!-- Security Badge -->
+            <div class="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6V9m0 0V7m0 2h2m-2 0H10M12 3C16.418 3 20 6.582 20 11c0 1.022-.194 1.996-.543 2.896L18 18h-2l-1.5-3h-1l-1.5 3H10l-1.457-4.104A8.954 8.954 0 014 11c0-4.418 3.582-8 8-8z" />
+              </svg>
+              100% Secure Payments
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+  </div>
+
+  <script>
+    function updateQuantity(productId, action) {
+      const qtyElement = document.getElementById('qty-' + productId);
+      let currentQty = parseInt(qtyElement.textContent);
+      
+      if (action === 'increase') {
+        currentQty += 1;
+      } else if (action === 'decrease' && currentQty > 1) {
+        currentQty -= 1;
+      }
+      
+      qtyElement.textContent = currentQty.toString().padStart(2, '0');
+      
+      // Here you would typically make an AJAX call to update the quantity on the server
+      // updateCartQuantity(productId, currentQty);
+    }
+    
+    function proceedToCheckout() {
+      // You can implement the checkout logic here
+      alert('Proceeding to checkout...');
+      // Redirect to checkout page or show checkout modal
+    }
+  </script>
+</body>
+
+</html>
