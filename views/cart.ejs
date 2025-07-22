@@ -53,12 +53,12 @@
             <div class="p-6 hover:bg-gray-50/80 transition-all duration-200" style="background-color: <%= product.bgColor %>10;">
               <div class="flex flex-row gap-6">
                 <!-- Product Image -->
-                <div class="flex-shrink-0 mx-auto md:mx-0">
-                  <div class="relative w-40 h-40 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" 
-                       style="background-color: <%= product.panelColor %>;">
+                <div class="mx-0">
+                  <div class="relative w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" 
+                       style="background-color: <%= product.bgColor %>;">
                     <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" 
                          alt="<%= product.name %>" 
-                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                         class="w-full h-full p-2 object-cover rounded-lg group-hover:scale-110 transition-transform duration-300">
                     <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                   </div>
                 </div>
@@ -69,24 +69,21 @@
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                       <div class="flex-1 space-y-3">
                         <div class="flex items-start justify-between">
-                          <h3 class="text-lg md:text-xl font-semibold hover:text-blue-600 transition-colors line-clamp-2" 
+                          <h3 class="md:text-xl text-[24px] font-semibold hover:text-blue-600 transition-colors line-clamp-2" 
                               style="color: <%= product.textColor %>;">
                             <%= product.name %>
                           </h3>
                           <!-- Remove Button - Moved to top right on mobile -->
                           <div class="flex-shrink-0 md:hidden">
                             <a href="/removeFromCart/<%= product._id %>" 
-                               class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border border-gray-200 hover:border-red-200">
+                               class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border-2 border-doubled border-gray-200 hover:border-red-200">
                               <svg class="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
                             </a>
                           </div>
                         </div>
-                        
-                        <% if (product.description) { %>
-                        <p class="text-sm text-gray-600 line-clamp-2"><%= product.description %></p>
-                        <% } %>
+                     
                         
                         <!-- Rating -->
                         <div class="flex items-center gap-2">
@@ -115,31 +112,34 @@
                             <span class="ml-2 text-sm text-gray-600">(<%= product.rate %>)</span>
                           </div>
                         </div>
+
                         <!-- Price and Category Info -->
+                        
                         <div class="space-y-3">
                           <div class="flex flex-wrap items-center gap-3">
-                            <span class="text-2xl font-bold" style="color: <%= product.textColor %>;">
+                            <span class="md:text-2xl text-lg font-bold" style="color: <%= product.textColor %>;">
                               ₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %>
-                            </span>
+                            </span> <!-- Need adjust with increase and decrease buttons -->
+                            <!-- Discount Badge -->
+                            </div>
+                            <div>
+                              
                             <% if (product.discount > 0) { %>
-                            <div class="flex items-center gap-2">
-                              <span class="text-sm text-gray-500 line-through">₹<%= product.price %></span>
-                              <span class="px-3 py-1 text-white text-sm font-medium rounded-full shadow-sm"
-                                    style="background-color: <%= product.bgColor %>;">
+                            <div class="flex items-center gap-2 italic">
+                              <span class="md:text-sm text-[14px] text-gray-500 line-through">₹<%= product.price %></span>
+                              <span class="md:px-3 md:py-1 px-2 py-0.5  text-white md:text-sm text-[14px] font-medium rounded-full shadow-lg bg-red-500 ">
                                 <%= product.discount %>% OFF
                               </span>
                             </div>
                             <% } %>
                           </div>
-                          
-                          <% if (product.category) { %>
+                          <!-- Category Badge -->
                           <div class="flex flex-wrap gap-2">
-                            <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-lg"
-                                  style="background-color: <%= product.panelColor %>20; color: <%= product.textColor %>;">
+                            <span class="italic font-bold flex items-center md:px-2 md:py-1 px-1 py-0.5 md:text-sm text-xs rounded-xl shadow-lg border border-[<%= product.textColor %>] bg-[<%= product.panelColor %>20] text-[<%= product.textColor %>]"
+                                  >
                               <%= product.category %>
                             </span>
                           </div>
-                          <% } %>
                         </div>
                       </div>
 
