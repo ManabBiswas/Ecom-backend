@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Cart - ShopHub</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" href="/CSS/style.css">
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -81,7 +80,7 @@
                         </button>
 
                         <!-- Quantity Display -->
-                        <span id="qty-<%= product._id %>" class="w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
+                        <span id="qty-<%= product._id %>" class=" w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
                           01
                         </span>
 
@@ -196,7 +195,7 @@
                                 </button>
 
                                 <!-- Quantity Display -->
-                                <span id="qty-<%= product._id %>" class="w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
+                                <span id="qty-<%= product._id %>" class=" quantity w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
                                   01
                                 </span>
 
@@ -269,11 +268,7 @@
             <div class="border-t border-gray-200 pt-4 mb-6">
               <div class="flex justify-between items-center text-lg font-semibold text-gray-900">
                 <span>Total Amount</span>
-                <span class="text-xl font-bold text-green-700">
-                  ₹<%= (products.reduce((total, product) => {
-              const price = product.price * (1 - product.discount/100);
-              return total + price;
-            }, 0) + 20).toFixed(2) %>
+                <span id="totalAmount" class="text-xl font-bold text-green-700">
                 </span>
               </div>
             </div>
@@ -284,7 +279,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
-                <div class=" text-center ">Delivery in 12-18 Days</div>
+                <div class=" text-center ">Delivery in 12-18 Hours</div>
               </div>
             </div>
 

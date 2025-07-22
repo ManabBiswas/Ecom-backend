@@ -38,14 +38,26 @@
 
     .add-to-cart-btn {
       backdrop-filter: blur(10px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
 
     .add-to-cart-btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.4);
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        0 4px 10px rgba(0, 0, 0, 0.1);
     }
+
+    .add-to-cart-btn:active {
+      transform: translateY(0px) scale(0.98);
+      transition-duration: 0.1s;
+    }
+
 
     .toast {
       transition: all 0.3s ease;
@@ -151,17 +163,20 @@
         <div class="lg:w-1/2 flex w-full sm:flex-row gap-4">
           <!-- Category Filter -->
           <select id="categoryFilter" class="w-full sm:w-1/2 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 shadow-sm transition duration-300 hover:border-purple-400">
-            <option value="">Select category</option>
-            <option value="electronics">Electronics</option>
-            <option value="clothing">Clothing</option>
-            <option value="home">Home & Garden</option>
-            <option value="books">Books</option>
-            <option value="sports">Sports & Outdoors</option>
-            <option value="toys">Toys & Games</option>
-            <option value="beauty">Beauty & Personal Care</option>
-            <option value="automotive">Automotive</option>
-            <option value="food">Food & Beverages</option>
-            <option value="other">Other</option>
+            <option class="text-teal-600 font-semibold" value="all">All Categories</option>
+            <option class="text-yellow-300 " value="electronics">Electronics</option>
+            <option class="text-indigo-600 " value="clothing">Clothing</option>
+            <option class="text-green-600 " value="home">Home & Garden</option>
+            <option class="text-violet-600 " value="books">Books</option>
+            <option class="text-red-600 " value="sports">Sports & Outdoors</option>
+            <option class="text-amber-600 " value="toys">Toys & Games</option>
+            <option class="text-purple-600 " value="beauty">Beauty & Personal Care</option>
+            <option class="text-blue-600 " value="automotive">Automotive</option>
+            <option class="text-orange-600 " value="food">Food & Beverages</option>
+            <option class="text-gray-600 font-semibold" value="other">Other</option>
+            
+           
+
           </select>
 
           <!-- Sort Filter -->
@@ -215,7 +230,7 @@
               <h3 class="text-lg sm:text-xl lg:text-2xl font-extrabold mb-0.5 sm:mb-1 line-clamp-2 leading-tight tracking-tight">
                 <%= product.name %>
               </h3>
-<hr/>
+              <hr />
               <!-- Product Description -->
               <p class="italic text-xs sm:text-sm lg:text-base opacity-75 mb-0.5 sm:mb-1 lg:mb-2 line-clamp-4 sm:line-clamp-3 leading-relaxed">
                 <%= product.description %>
@@ -235,7 +250,7 @@
                 <% } %>
               </div>
 
-              
+
             </div>
 
             <!-- Category & Rating with Modern Design -->
@@ -259,7 +274,7 @@
             <!-- Add to Cart -->
             <div class="mt-2">
               <a href="/addtoCart/<%= product._id %>">
-                <button class="add-to-cart-btn w-full py-3 px-5 bg-[<%= product.textColor %>90] text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300">
+                <button class="add-to-cart-btn group w-full py-3.5 px-5 bg-[<%= product.textColor %>95] border-2 border-[<%= product.textColor %>95] text-white hover:bg-transparent hover:text-[<%= product.textColor %>95] rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-3 transition-all duration-300 relative overflow-hidden">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.68 4.72a1 1 0 00.95 1.28h9.46a1 1 0 00.95-1.28L15 13M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
                   </svg>
@@ -310,7 +325,7 @@
     <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
 
     <!-- Include external JavaScript file -->
-    <script src="../public/JS/shop.js"></script>
+    <script src="/JS/shop.js"></script>
 </body>
 
 </html>
