@@ -13,12 +13,18 @@
   <div class="container mx-auto px-4 py-8 max-w-6xl">
     <!-- Header -->
     <header class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Your Shopping Cart</h1>
+      <h1 class="md:text-3xl text-xl text-violet-500 font-bold text-gray-900">Your Shopping Cart</h1>
       <a href="/shop" class="text-blue-600 hover:text-blue-800 flex items-center gap-2 font-medium">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Continue Shopping
+        <div class="border-2 border-blue-600 mx-2 mt-2 flex flex-row items-center justify-center rounded-full p-2 hover:bg-blue-50 transition-all duration-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span class="inline-block">Back </span>
+          <span class="hidden md:inline-block">to Shop</span>
+        </div>
+      </a>
+
+
       </a>
     </header>
 
@@ -37,7 +43,7 @@
       </div>
     </div>
     <% } else { %>
-    
+
     <!-- Main Cart Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Cart Items Section -->
@@ -47,83 +53,116 @@
             <h2 class="text-xl font-semibold text-gray-900">Cart Items</h2>
             <span class="text-sm text-gray-500">(<%= products.length %> items)</span>
           </div>
-          
+
           <div class="divide-y divide-gray-100">
             <% products.forEach(product => { %>
             <div class="p-6 hover:bg-gray-50/80 transition-all duration-200" style="background-color: <%= product.bgColor %>10;">
               <div class="flex flex-row gap-6">
                 <!-- Product Image -->
                 <div class="mx-0">
-                  <div class="relative w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" 
-                       style="background-color: <%= product.bgColor %>;">
-                    <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" 
-                         alt="<%= product.name %>" 
-                         class="w-full h-full p-2 object-cover rounded-lg group-hover:scale-110 transition-transform duration-300">
+                  <div class="relative w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" style="background-color: <%= product.bgColor %>;">
+                    <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="<%= product.name %>" class="w-full h-full p-2 object-cover rounded-lg group-hover:scale-110 transition-transform duration-300">
                     <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                   </div>
+                  <!-- Quantity and Delivery Info -->
+                  <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-4 ">
+
+                    <!-- Quantity Controls -->
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
+                      <span class="text-sm font-medium sm:w-auto w-full text-[<%= product.textColor %>]">Quantity:</span>
+
+                      <div class="flex items-center gap-2 sm:gap-3">
+                        <!-- Decrease Button -->
+                        <button onclick="updateQuantity('<%= product._id %>', 'decrease')" class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95 transition border-2 border-[<%= product.textColor %>]" aria-label="Decrease Quantity ">
+                          <svg class="w-4 h-4" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                          </svg>
+                        </button>
+
+                        <!-- Quantity Display -->
+                        <span id="qty-<%= product._id %>" class="w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
+                          01
+                        </span>
+
+                        <!-- Increase Button -->
+                        <button onclick="updateQuantity('<%= product._id %>', 'increase')" class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95 transition border-2 border-[<%= product.textColor %>]" aria-label="Increase Quantity">
+                          <svg class="w-4 h-4" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+
                 </div>
 
                 <!-- Product Details -->
-                <div class="flex-1 flex flex-col justify-between md:min-h-[10rem]"> 
+                <div class="flex-1 flex flex-col justify-between md:min-h-[10rem]">
+
                   <div class="space-y-4">
+
+                    <!-- Product Info -->
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+
                       <div class="flex-1 space-y-3">
+
+                        <!-- Product Name and Remove Button -->
                         <div class="flex items-start justify-between">
-                          <h3 class="md:text-xl text-[24px] font-semibold hover:text-blue-600 transition-colors line-clamp-2" 
-                              style="color: <%= product.textColor %>;">
+                          <h3 class="md:text-xl text-[24px] font-semibold hover:text-blue-600 transition-colors line-clamp-2" style="color: <%= product.textColor %>;">
                             <%= product.name %>
                           </h3>
+                          <hr class="my-4" />
                           <!-- Remove Button - Moved to top right on mobile -->
                           <div class="flex-shrink-0 md:hidden">
-                            <a href="/removeFromCart/<%= product._id %>" 
-                               class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border-2 border-doubled border-gray-200 hover:border-red-200">
-                              <svg class="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="/removeFromCart/<%= product._id %>" class="group inline-flex items-center justify-center w-11 h-11 rounded-full text-red-500 hover:text-red-50 hover:bg-red-500 transition-all duration-200 border-4 border-double border-red-200 hover:border-red-200">
+                              <svg class="w-8 h-8 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
                             </a>
                           </div>
                         </div>
-                     
-                        
+
+
                         <!-- Rating -->
                         <div class="flex items-center gap-2">
                           <div class="flex items-center">
                             <% for(let i = 0; i < 5; i++) { %>
-                              <% if(i < Math.floor(product.rate)) { %>
-                                <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                </svg>
-                              <% } else if(i < product.rate) { %>
-                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                  <defs>
-                                    <linearGradient id="half-<%= i %>">
-                                      <stop offset="50%" stop-color="currentColor"/>
-                                      <stop offset="50%" stop-color="transparent"/>
-                                    </linearGradient>
-                                  </defs>
-                                  <path fill="url(#half-<%= i %>)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                </svg>
-                              <% } else { %>
-                                <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
-                                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                </svg>
-                              <% } %>
+                            <% if(i < Math.floor(product.rate)) { %>
+                            <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                            <% } else if(i < product.rate) { %>
+                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                              <defs>
+                                <linearGradient id="half-<%= i %>">
+                                  <stop offset="50%" stop-color="currentColor" />
+                                  <stop offset="50%" stop-color="transparent" />
+                                </linearGradient>
+                              </defs>
+                              <path fill="url(#half-<%= i %>)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                            <% } else { %>
+                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                            <% } %>
                             <% } %>
                             <span class="ml-2 text-sm text-gray-600">(<%= product.rate %>)</span>
                           </div>
                         </div>
 
                         <!-- Price and Category Info -->
-                        
+
                         <div class="space-y-3">
                           <div class="flex flex-wrap items-center gap-3">
                             <span class="md:text-2xl text-lg font-bold" style="color: <%= product.textColor %>;">
                               ₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %>
                             </span> <!-- Need adjust with increase and decrease buttons -->
                             <!-- Discount Badge -->
-                            </div>
-                            <div>
-                              
+                          </div>
+                          <div>
+
                             <% if (product.discount > 0) { %>
                             <div class="flex items-center gap-2 italic">
                               <span class="md:text-sm text-[14px] text-gray-500 line-through">₹<%= product.price %></span>
@@ -135,8 +174,7 @@
                           </div>
                           <!-- Category Badge -->
                           <div class="flex flex-wrap gap-2">
-                            <span class="italic font-bold flex items-center md:px-2 md:py-1 px-1 py-0.5 md:text-sm text-xs rounded-xl shadow-lg border border-[<%= product.textColor %>] bg-[<%= product.panelColor %>20] text-[<%= product.textColor %>]"
-                                  >
+                            <span class="italic font-bold flex items-center md:px-2 md:py-1 px-1 py-0.5 md:text-sm text-xs rounded-xl shadow-lg border border-[<%= product.textColor %>] bg-[<%= product.panelColor %>20] text-[<%= product.textColor %>]">
                               <%= product.category %>
                             </span>
                           </div>
@@ -145,51 +183,11 @@
 
                       <!-- Remove Button - Hidden on mobile, shown on desktop -->
                       <div class="hidden md:block flex-shrink-0">
-                        <a href="/removeFromCart/<%= product._id %>" 
-                           class="group inline-flex items-center justify-center w-11 h-11 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200 border border-gray-200 hover:border-red-200">
-                          <svg class="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="/removeFromCart/<%= product._id %>" class="group inline-flex items-center justify-center w-11 h-11 rounded-full text-red-500 hover:text-red-50 hover:bg-red-500 transition-all duration-200 border-4 border-double border-red-200 hover:border-red-200">
+                          <svg class="w-10 h-10 transform group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </a>
-                      </div>
-                    </div>
-                    
-                    <!-- Quantity and Delivery Info -->
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-4 border-t" style="border-color: <%= product.bgColor %>20;">
-                      <!-- Quantity Controls -->
-                      <div class="flex items-center gap-3">
-                        <span class="text-sm font-medium" style="color: <%= product.textColor %>;">Quantity:</span>
-                        <div class="flex items-center border rounded-lg shadow-sm" 
-                             style="border-color: <%= product.bgColor %>;">
-                          <button onclick="updateQuantity('<%= product._id %>', 'decrease')" 
-                                  class="p-2.5 hover:opacity-80 active:opacity-60 transition-opacity duration-150 rounded-l-lg"
-                                  style="background-color: <%= product.panelColor %>; color: <%= product.textColor %>;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                            </svg>
-                          </button>
-                          <span class="w-12 text-center py-2 text-sm font-semibold border-x" 
-                                style="border-color: <%= product.bgColor %>; color: <%= product.textColor %>;" 
-                                id="qty-<%= product._id %>">01</span>
-                          <button onclick="updateQuantity('<%= product._id %>', 'increase')" 
-                                  class="p-2.5 hover:opacity-80 active:opacity-60 transition-opacity duration-150 rounded-r-lg"
-                                  style="background-color: <%= product.panelColor %>; color: <%= product.textColor %>;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-
-                      <!-- Delivery Info -->
-                      <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg" 
-                             style="color: <%= product.textColor %>; background-color: <%= product.panelColor %>10;">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                          </svg>
-                          <span>Delivery in 2-3 business days</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -203,52 +201,66 @@
 
       <!-- Price Breakdown Section -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl shadow-sm sticky top-8">
-          <div class="p-6">
+        <div class="bg-white rounded-2xl shadow-md sticky top-8 overflow-hidden">
+          <div class="p-4 md:p-6">
+            <!-- Header -->
             <h2 class="text-xl font-semibold text-gray-900 mb-6">Price Breakdown</h2>
-            
+            <hr class="my-4" />
+            <!-- Price Details -->
             <div class="space-y-4 mb-6">
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Total MRP</span>
-                <span class="font-medium">₹<%= products.reduce((total, product) => total + product.price, 0).toFixed(2) %></span>
+                <span class="text-right font-medium min-w-[80px] block">
+                  ₹<%= products.reduce((total, product) => total + product.price, 0).toFixed(2) %>
+                </span>
               </div>
-              
+
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Discount on MRP</span>
-                <span class="font-medium text-green-600">
+                <span class="text-right font-medium text-green-600 min-w-[80px] block">
                   -₹<%= products.reduce((total, product) => total + (product.price * product.discount / 100), 0).toFixed(2) %>
                 </span>
               </div>
-              
+
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Platform Fee</span>
-                <span class="font-medium">₹20</span>
+                <span class="text-right font-medium min-w-[80px] block">₹20</span>
               </div>
-              
+
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Shipping Fee</span>
-                <span class="font-medium text-green-600">FREE</span>
+                <span class="text-right font-medium text-green-600 min-w-[80px] block">FREE</span>
               </div>
             </div>
 
+            <!-- Total Amount -->
             <div class="border-t border-gray-200 pt-4 mb-6">
-              <div class="flex justify-between items-center">
-                <span class="text-lg font-semibold text-gray-900">Total Amount</span>
-                <span class="text-xl font-bold text-green-600">
+              <div class="flex justify-between items-center text-lg font-semibold text-gray-900">
+                <span>Total Amount</span>
+                <span class="text-xl font-bold text-green-700">
                   ₹<%= (products.reduce((total, product) => {
-                      const price = product.price * (1 - product.discount/100);
-                      return total + price;
-                  }, 0) + 20).toFixed(2) %>
+              const price = product.price * (1 - product.discount/100);
+              return total + price;
+            }, 0) + 20).toFixed(2) %>
                 </span>
+              </div>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="flex items-center gap-2 w-full mb-4">
+              <div class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md text-green-800 bg-green-100 border border-green-300 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <span>Delivery in 2–3 business days</span>
               </div>
             </div>
 
             <!-- Checkout Button -->
-            <button onclick="proceedToCheckout()" 
-                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <button onclick="proceedToCheckout()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" data-testid="checkout-btn">
               Proceed to Checkout
             </button>
-            
+
             <!-- Security Badge -->
             <div class="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
