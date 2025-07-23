@@ -80,8 +80,8 @@
                         </button>
 
                         <!-- Quantity Display -->
-                        <span id="qty-<%= product._id %>" class=" w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
-                          01
+                        <span id="qty-<%= product._id %>" class="quantity w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;" data-product-id="<%= product._id %>">
+                          <%= product.quantity %>
                         </span>
 
                         <!-- Increase Button -->
@@ -195,8 +195,8 @@
                                 </button>
 
                                 <!-- Quantity Display -->
-                                <span id="qty-<%= product._id %>" class=" quantity w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;">
-                                  01
+                                <span id="qty-<%= product._id %>" class=" quantity w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;" data-product-id="<%= product._id %>">
+                                  <%= product.quantity %>
                                 </span>
 
                                 <!-- Increase Button -->
