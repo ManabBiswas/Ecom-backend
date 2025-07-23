@@ -165,8 +165,8 @@
 
                             <% if (product.discount > 0) { %>
                             <div class="flex items-center gap-2 italic">
-                              <span class="md:text-sm text-[14px] text-gray-500 line-through">₹<%= product.price %></span>
-                              <span class="md:px-3 md:py-1 px-2 py-0.5  text-white md:text-sm text-[14px] font-medium rounded-full shadow-lg bg-red-500 ">
+                              <span id="original-price-<%= product._id %>" class="md:text-sm text-[14px] text-gray-500 line-through">₹<%= product.price %></span>
+                              <span  id="discount-<%= product._id %>" class="md:px-3 md:py-1 px-2 py-0.5  text-white md:text-sm text-[14px] font-medium rounded-full shadow-lg bg-red-500 ">
                                 <%= product.discount %>% OFF
                               </span>
                             </div>
@@ -195,7 +195,7 @@
                                 </button>
 
                                 <!-- Quantity Display -->
-                                <span id="qty-<%= product._id %>" class=" quantity w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;" data-product-id="<%= product._id %>">
+                                <span id="qty-<%= product._id %>" class=" quantity quantityD w-12 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-white text-gray-900 border border-[<%= product.textColor %>] shadow-sm transition-colors duration-200" style="color: <%= product.textColor %>;" data-product-id="<%= product._id %>">
                                   <%= product.quantity %>
                                 </span>
 
