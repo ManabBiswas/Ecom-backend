@@ -12,6 +12,11 @@ router.get("/", (req, res) => {
     res.render("index", { error, success });
 });
 
+router.get("/about", (req, res) => {
+    // Render the about page
+    res.render("about");;
+});
+
 // Apply authentication middleware to protected routes
 router.get("/shop", isLoggedIn, async (req, res) => {
     try {
