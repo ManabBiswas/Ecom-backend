@@ -14,7 +14,12 @@ router.get("/", (req, res) => {
 
 router.get("/about", (req, res) => {
     // Render the about page
-    res.render("about");;
+    res.render("about");
+});
+
+router.get("/contact", (req, res) => {
+    // Render the contact page
+    res.render("contact");
 });
 
 // Apply authentication middleware to protected routes
