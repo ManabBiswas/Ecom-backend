@@ -60,8 +60,9 @@ backend_e-commerce/
 ├── views/                    
 │   ├── index.ejs             # Home page templates
 │   ├── shop.ejs              # Shop page templates
-│   ├── cart.ejs              # Shop page templates
+│   ├── cart.ejs              # Cart page templates
 │   ├── createProduct.ejs     # owner's product creation page templates
+│   ├── contact.ejs           # Contact page templates
 │   └── about.ejs             # About page templates
 │
 ├── .env                      #Environment file
