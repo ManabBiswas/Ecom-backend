@@ -14,7 +14,7 @@ router.get("/admin", (req, res) => {
     };
     
     // Debug logging
-    console.log("Flash messages:", messages);
+    // console.log("Flash messages:", messages);
     
     res.render("createProduct", { messages });
 });
@@ -70,7 +70,7 @@ router.post("/create", async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
-        console.log("Owner created successfully:", createdOwner.fullName);
+        // console.log("Owner created successfully:", createdOwner.fullName);
         res.status(201).json({
             success: true,
             message: "Owner created successfully",

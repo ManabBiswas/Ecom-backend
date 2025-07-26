@@ -30,13 +30,6 @@ module.exports.registerUser = async (req, res) => {
         // Generate JWT token
         const token = generateToken(user);
 
-        // Enhanced cookie settings with debugging
-        console.log("Setting cookie for registration:", {
-            token: token.substring(0, 20) + "...",
-            userId: user._id,
-            email: user.email
-        });
-
         // Clear any existing cookie first
         res.clearCookie('token');
 
@@ -46,19 +39,16 @@ module.exports.registerUser = async (req, res) => {
             secure: false, // Set to false for development (localhost)
             sameSite: 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
-            path: '/' // Explicitly set path
+            path: '/'
         });
 
-        console.log("User registered successfully:", user.fullName);
         req.flash('success', 'Registration successful! Welcome to ShopHub!');
         res.redirect('/shop');
-
     } catch (err) {
-        console.error("Registration error:", err.message);
         req.flash('error', 'Registration failed. Please try again.');
         res.redirect('/');
     }
-}
+};
 
 module.exports.loginUser = async (req, res) => {
     try {
@@ -81,13 +71,6 @@ module.exports.loginUser = async (req, res) => {
         // Generate JWT token using utility
         const token = generateToken(user);
 
-        // Enhanced cookie settings with debugging
-        console.log("Setting cookie for login:", {
-            token: token.substring(0, 20) + "...",
-            userId: user._id,
-            email: user.email
-        });
-
         // Clear any existing cookie first
         res.clearCookie('token');
 
@@ -97,16 +80,13 @@ module.exports.loginUser = async (req, res) => {
             secure: false, // Set to false for development (localhost)
             sameSite: 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
-            path: '/' // Explicitly set path
+            path: '/'
         });
 
-        console.log("User logged in successfully:", user.fullName);
         req.flash('success', 'Login successful! Welcome back!');
         res.redirect('/shop');
-
     } catch (err) {
-        console.error("Login error:", err.message);
         req.flash('error', 'Login failed. Please try again.');
         res.redirect('/');
     }
-}
+};

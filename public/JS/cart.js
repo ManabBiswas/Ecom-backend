@@ -40,7 +40,7 @@ function updateQuantity(productId, action) {
 
     // Update the quantity display with zero padding
     const formattedQuantity = currentQuantity.toString().padStart(2, '0');
-    console.log(`Updating quantity for product ${productId}: ${formattedQuantity}`);
+    // console.log(`Updating quantity for product ${productId}: ${formattedQuantity}`);
     quantityElement.textContent = formattedQuantity;
 
     // Update all quantity displays for this product
@@ -124,7 +124,7 @@ function calculateTotals() {
 
     const finalAmount = totalMRP - totalDiscount + platformFee;
 
-    console.log(`Total MRP: ₹${totalMRP.toFixed(2)}, Total Discount: ₹${totalDiscount.toFixed(2)}, Platform Fee: ₹${platformFee}, Final Amount: ₹${finalAmount.toFixed(2)}`);
+    // console.log(`Total MRP: ₹${totalMRP.toFixed(2)}, Total Discount: ₹${totalDiscount.toFixed(2)}, Platform Fee: ₹${platformFee}, Final Amount: ₹${finalAmount.toFixed(2)}`);
 
     // Update display if function exists
     if (typeof updatePriceDisplay === 'function') {
@@ -204,7 +204,7 @@ function proceedToCheckout() {
 
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('Cart JavaScript loaded');
+    // console.log('Cart JavaScript loaded');
 
     // Initialize product data
     initializeProductData();
