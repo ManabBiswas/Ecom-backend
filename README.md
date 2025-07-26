@@ -53,15 +53,20 @@ backend_e-commerce/
 ├── utils/
 │   └── generateToken.js      # JWT token generation utility
 ├── public/
+│   ├── CSS/
+│   │   └── createProduct.css 
 │   └── JS/
 │       ├── script.js         # Index page frontend functionality
 │       ├── shop.js           # Shop page interactions
+│       ├── ownerDashbord.js  # Owner's Dashbord page interactions
+│       ├── createProduct.js  # createProduct page interactions
 │       └── cart.js           # Cart management
 ├── views/                    
 │   ├── index.ejs             # Home page templates
 │   ├── shop.ejs              # Shop page templates
 │   ├── cart.ejs              # Cart page templates
 │   ├── createProduct.ejs     # owner's product creation page templates
+│   ├── ownerDashbord.ejs     # owner's dashbord.js page templates
 │   ├── contact.ejs           # Contact page templates
 │   └── about.ejs             # About page templates
 │
