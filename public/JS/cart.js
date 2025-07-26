@@ -135,43 +135,28 @@ function calculateTotals() {
 // Update price display elements
 function updatePriceDisplay(totalMRP, totalDiscount, platformFee, finalAmount) {
     // Update Total MRP
-    const mrpElements = document.querySelectorAll('.total-mrp, [data-total="mrp"]');
+    const mrpElements = document.querySelectorAll('#cartTotalMRP');
     mrpElements.forEach(el => {
         el.textContent = `₹${totalMRP.toFixed(2)}`;
     });
 
     // Update Discount
-    const discountElements = document.querySelectorAll('.total-discount, [data-total="discount"]');
+    const discountElements = document.querySelectorAll('#cartDiscount');
     discountElements.forEach(el => {
         el.textContent = `-₹${totalDiscount.toFixed(2)}`;
     });
 
     // Update Platform Fee
-    const feeElements = document.querySelectorAll('.platform-fee, [data-total="fee"]');
+    const feeElements = document.querySelectorAll('#cartPlatformFee');
     feeElements.forEach(el => {
         el.textContent = `₹${platformFee.toFixed(2)}`;
     });
 
-    // Update Final Total - try multiple selectors
-    const totalSelectors = [
-        '#totalAmount',
-        '.total-amount',
-        '.text-xl.font-bold.text-green-700',
-        '[data-total="final"]'
-    ];
-
-    let updated = false;
-    totalSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            el.textContent = `₹${finalAmount.toFixed(2)}`;
-            updated = true;
-        });
+    // Update Final Total
+    const totalElements = document.querySelectorAll('#cartTotal');
+    totalElements.forEach(el => {
+        el.textContent = `₹${finalAmount.toFixed(2)}`;
     });
-
-    if (!updated) {
-        console.warn('Could not find total amount element to update');
-    }
 }
 
 // Handle checkout process

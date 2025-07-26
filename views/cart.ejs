@@ -56,7 +56,7 @@
           <div class="divide-y divide-gray-100">
             <% products.forEach(product => { %>
             <div class="p-6 hover:bg-gray-50/80 transition-all duration-200">
-              <div class="flex flex-row gap-6 bg-[<%= product.panelColor %>40] rounded-2xl p-4 md:p-6 shadow-sm hover:shadow-md transition-all duration-200">
+              <div class="flex flex-row gap-2 md:gap-6 bg-[<%= product.panelColor %>40] rounded-2xl p-4 md:p-6 shadow-sm hover:shadow-md transition-all duration-200">
                 <!-- Product Image -->
                 <div class="mx-0">
                   <div class="relative w-32 h-32 md:w-78 md:h-78 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 group" style="background-color: <%= product.bgColor %>;">
@@ -165,7 +165,7 @@
 
                             <% if (product.discount > 0) { %>
                             <div class="flex items-center gap-2 italic">
-                              <span id="original-price-<%= product._id %>" class="md:text-sm text-[14px] text-gray-500 line-through">₹<%= product.price %></span>
+                              <span id="original-price-<%= product._id %>" class="md:text-sm text-[14px] text-gray-600 line-through font-semibold">₹<%= product.price %></span>
                               <span  id="discount-<%= product._id %>" class="md:px-3 md:py-1 px-2 py-0.5  text-white md:text-sm text-[14px] font-medium rounded-full shadow-lg bg-red-500 ">
                                 <%= product.discount %>% OFF
                               </span>
@@ -241,21 +241,21 @@
             <div class="space-y-4 mb-6">
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Total MRP</span>
-                <span class="text-right font-medium min-w-[80px] block">
+                <span id="cartTotalMRP" class="text-right font-medium min-w-[80px] block">
                   ₹<%= products.reduce((total, product) => total + product.price, 0).toFixed(2) %>
                 </span>
               </div>
 
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Discount on MRP</span>
-                <span class="text-right font-medium text-green-600 min-w-[80px] block">
+                <span id="cartDiscount" class="text-right font-medium text-green-600 min-w-[80px] block">
                   -₹<%= products.reduce((total, product) => total + (product.price * product.discount / 100), 0).toFixed(2) %>
                 </span>
               </div>
 
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Platform Fee</span>
-                <span class="text-right font-medium min-w-[80px] block">₹20</span>
+                <span id="cartPlatformFee" class="text-right font-medium min-w-[80px] block">₹07</span>
               </div>
 
               <div class="flex justify-between items-center">
@@ -268,7 +268,7 @@
             <div class="border-t border-gray-200 pt-4 mb-6">
               <div class="flex justify-between items-center text-lg font-semibold text-gray-900">
                 <span>Total Amount</span>
-                <span id="totalAmount" class="text-xl font-bold text-green-700">
+                <span id="cartTotal" class="text-xl font-bold text-green-700">
                 </span>
               </div>
             </div>

@@ -19,6 +19,10 @@ router.get("/admin", (req, res) => {
     res.render("createProduct", { messages });
 });
 
+router.get("/dashboard", (req, res) => {
+    res.render("ownerDashbord");
+});
+
 // Create Owner (Only one owner allowed)
 router.post("/create", async (req, res) => {
     try {
