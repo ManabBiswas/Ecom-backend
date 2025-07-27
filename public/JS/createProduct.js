@@ -91,7 +91,7 @@ function updateLivePreview() {
                     <div class="flex items-center gap-2">
                         ${discount > 0 ? `<span class="text-sm line-through opacity-60">₹${price}</span>` : ''}
                         <span class="font-bold">₹${discountedPrice || price || '0.00'}</span>
-                        ${discount > 0 ? `<span class="text-xs px-2 py-1 rounded-full bg-red-500">${discount}% OFF</span>` : ''}
+                        ${discount > 0 ? `<span class="text-xs text-white italic px-2 py-1 rounded-full bg-red-500">${discount}% OFF</span>` : ''}
                     </div>
                 </div>
             </div>

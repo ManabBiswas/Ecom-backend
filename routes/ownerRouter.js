@@ -1,22 +1,49 @@
 const express = require("express");
 const router = express.Router();
 const ownerModel = require("../models/ownermodels");
+const productModel = require("../models/productmodels");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-// Admin route - renders create product page
-router.get("/admin", (req, res) => {
-    // Get flash messages
-    const messages = {
-        success: req.flash('success'),
-        error: req.flash('error')
-    };
-    
-    // Debug logging
-    // console.log("Flash messages:", messages);
-    
-    res.render("createProduct", { messages });
+router.get("/admin", async (req, res) => {
+    try {
+        // Get flash messages
+        const messages = {
+            success: req.flash('success'),
+            error: req.flash('error')
+        };
+        
+        // Fetch all products to display on admin page
+        const products = await productModel.find();
+        
+        // Convert buffer images to base64 for display
+        const productsWithImages = products.map(product => {
+            let imageData = null;
+            if (product.image) {
+                imageData = `data:image/jpeg;base64,${product.image.toString('base64')}`;
+            }
+            return {
+                ...product.toObject(),
+                image: imageData
+            };
+        });
+        
+        res.render("createProduct", { 
+            messages,
+            products: productsWithImages
+        });
+    } catch (error) {
+        console.error("Error loading admin page:", error.message);
+        const messages = {
+            success: req.flash('success'),
+            error: ['Error loading products']
+        };
+        res.render("createProduct", { 
+            messages,
+            products: []
+        });
+    }
 });
 
 router.get("/dashboard", (req, res) => {
