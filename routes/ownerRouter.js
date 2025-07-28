@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ownerModel = require("../models/ownermodels");
 const productModel = require("../models/productmodels");
+const userModel = require("../models/usermodels");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
