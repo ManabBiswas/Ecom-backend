@@ -1,19 +1,35 @@
-// Sample data - In real implementation, this would come from your backend
-let products = [
-    { id: 1, name: "Wireless Headphones", price: 99.99, stock: 25, description: "High-quality wireless headphones", status: "active" },
-    { id: 2, name: "Smartphone Case", price: 19.99, stock: 50, description: "Protective phone case", status: "active" },
-    { id: 3, name: "Bluetooth Speaker", price: 79.99, stock: 15, description: "Portable bluetooth speaker", status: "active" },
-    { id: 4, name: "USB Cable", price: 12.99, stock: 100, description: "High-speed USB cable", status: "active" },
-    { id: 5, name: "Laptop Stand", price: 45.99, stock: 8, description: "Adjustable laptop stand", status: "low_stock" }
-];
+let products = [];
+let orders = [];
 
-let orders = [
-    { id: 1, productId: 1, productName: "Wireless Headphones", quantity: 2, date: "2024-01-20", customer: "John Doe" },
-    { id: 2, productId: 2, productName: "Smartphone Case", quantity: 1, date: "2024-01-19", customer: "Jane Smith" },
-    { id: 3, productId: 1, productName: "Wireless Headphones", quantity: 1, date: "2024-01-18", customer: "Bob Johnson" },
-    { id: 4, productId: 3, productName: "Bluetooth Speaker", quantity: 1, date: "2024-01-17", customer: "Alice Brown" },
-    { id: 5, productId: 2, productName: "Smartphone Case", quantity: 3, date: "2024-01-16", customer: "Charlie Wilson" }
-];
+// Fetch products from backend
+async function fetchProducts() {
+    try {
+        const response = await fetch('/products/owner/all');
+        const data = await response.json();
+        if (data.success) {
+            products = data.products;
+            renderProducts();
+            updateStats();
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+}
+
+// Fetch orders from backend
+async function fetchOrders() {
+    try {
+        const response = await fetch('/products/orders');
+        const data = await response.json();
+        if (data.success) {
+            orders = data.orders;
+            renderOrderAnalytics();
+            updateStats();
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+}
 
 let editingProductId = null;
 
@@ -158,16 +174,27 @@ function hideProductModal() {
     document.getElementById('productModal').classList.add('hidden');
 }
 
-function deleteProduct(id) {
+async function deleteProduct(id) {
     if (confirm('Are you sure you want to delete this product?')) {
-        products = products.filter(p => p.id !== id);
-        renderProducts();
-        updateStats();
+        try {
+            const response = await fetch(`/products/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (data.success) {
+                await fetchProducts(); // Refresh the products list
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            alert('Error deleting product: ' + error.message);
+        }
     }
 }
 
 // Handle form submission
-document.getElementById('productForm').addEventListener('submit', function (e) {
+document.getElementById('productForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const formData = {
@@ -178,25 +205,48 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
         status: parseInt(document.getElementById('productStock').value) < 10 ? 'low_stock' : 'active'
     };
 
-    if (editingProductId) {
-        // Edit existing product
-        const index = products.findIndex(p => p.id === editingProductId);
-        if (index !== -1) {
-            products[index] = { ...products[index], ...formData };
+    try {
+        if (editingProductId) {
+            // Edit existing product
+            const response = await fetch(`/products/${editingProductId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message);
+            }
+        } else {
+            // Add new product
+            const response = await fetch('/products/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message);
+            }
         }
-    } else {
-        // Add new product
-        const newId = Math.max(...products.map(p => p.id)) + 1;
-        products.push({ id: newId, ...formData });
+        
+        await fetchProducts(); // Refresh the products list
+        hideProductModal();
+    } catch (error) {
+        console.error('Error saving product:', error);
+        alert('Error saving product: ' + error.message);
     }
-
-    renderProducts();
-    updateStats();
-    hideProductModal();
 });
 
 // Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', async () => {
+    initDashboard();
+    await Promise.all([fetchProducts(), fetchOrders()]);
+});
 
 // Add CSS for active tab
 const style = document.createElement('style');
