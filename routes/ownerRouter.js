@@ -47,8 +47,62 @@ router.get("/admin", async (req, res) => {
     }
 });
 
-router.get("/dashboard", (req, res) => {
-    res.render("ownerDashbord");
+router.get("/dashboard", async (req, res) => {
+    try {
+        // Check if owner is logged in
+        if (!req.cookies.token) {
+            return res.redirect('/owners/login');
+        }
+
+        res.render("ownerDashbord", {
+            messages: {
+                success: req.flash('success'),
+                error: req.flash('error')
+            }
+        });
+    } catch (error) {
+        console.error("Error loading dashboard:", error);
+        req.flash('error', 'Error loading dashboard');
+        res.redirect('/');
+    }
+});
+
+// Get owner's products
+router.get("/admin/products", async (req, res) => {
+    try {
+        // Check if owner is logged in
+        if (!req.cookies.token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Please login first'
+            });
+        }
+
+        const products = await productModel.find();
+        
+        // Convert buffer images to base64
+        const productsWithImages = products.map(product => {
+            let imageData = null;
+            if (product.image) {
+                imageData = `data:image/jpeg;base64,${product.image.toString('base64')}`;
+            }
+            return {
+                ...product.toObject(),
+                image: imageData
+            };
+        });
+
+        res.json({
+            success: true,
+            products: productsWithImages
+        });
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching products'
+        });
+    }
 });
 
 // Create Owner (Only one owner allowed)

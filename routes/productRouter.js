@@ -8,8 +8,10 @@ const productModel = require("../models/productmodels");
 router.post("/create", upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
-            req.flash('error', 'Please select an image file');
-            return res.redirect("/owners/admin");
+            return res.status(400).json({
+                success: false,
+                message: 'Please select an image file'
+            });
         }
 
         let { name, description, price, discount, bgColor, textColor, panelColor, category } = req.body;
@@ -17,22 +19,29 @@ router.post("/create", upload.single('image'), async (req, res) => {
             image: req.file.buffer,
             name,
             description,
-            price,
-            discount,
+            price: parseFloat(price),
+            discount: parseInt(discount) || 0,
             bgColor,
-            textColor,  
+            textColor,
             panelColor,
             category,
         });
         
-        // Set success flash message
-        req.flash('success', 'Product created successfully!');
-        res.redirect("/owners/admin");
+        res.json({
+            success: true,
+            message: 'Product created successfully!',
+            product: {
+                ...product.toObject(),
+                image: `data:image/jpeg;base64,${product.image.toString('base64')}`
+            }
+        });
         
     } catch (error) {
-        console.error("Error creating product:", error.message);
-        req.flash('error', error.message);
-        res.redirect("/owners/admin");
+        console.error("Error creating product:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 });
 

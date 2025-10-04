@@ -1,35 +1,50 @@
 let products = [];
-let orders = [];
 
 // Fetch products from backend
 async function fetchProducts() {
     try {
-        const response = await fetch('/products/owner/all');
+        const response = await fetch('/owners/admin/products');
         const data = await response.json();
         if (data.success) {
-            products = data.products;
+            products = data.products.map(product => ({
+                ...product,
+                status: parseInt(product.stock) < 10 ? 'low_stock' : 'active'
+            }));
             renderProducts();
             updateStats();
+            showNotification('Products loaded successfully', 'success');
         }
     } catch (error) {
         console.error('Error fetching products:', error);
+        showNotification('Error loading products', 'error');
     }
 }
 
-// Fetch orders from backend
-async function fetchOrders() {
-    try {
-        const response = await fetch('/products/orders');
-        const data = await response.json();
-        if (data.success) {
-            orders = data.orders;
-            renderOrderAnalytics();
-            updateStats();
-        }
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-    }
-}
+// Show notification
+function showNotification(message, type = 'success') {
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white shadow-lg z-50 animate-fade-in`;
+    notificationDiv.textContent = message;
+    document.body.appendChild(notificationDiv);
+    setTimeout(() => {
+        notificationDiv.remove();
+    }, 3000);
+}// Fetch orders from backend
+// async function fetchOrders() {
+//     try {
+//         const response = await fetch('/products/orders');
+//         const data = await response.json();
+//         if (data.success) {
+//             orders = data.orders;
+//             renderOrderAnalytics();
+//             updateStats();
+//         }
+//     } catch (error) {
+//         console.error('Error fetching orders:', error);
+//     }
+// }
 
 let editingProductId = null;
 
@@ -71,26 +86,50 @@ function renderProducts() {
     products.forEach(product => {
         const row = document.createElement('tr');
         row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="h-16 w-16 flex-shrink-0">
+                        <img class="h-16 w-16 rounded-lg object-cover" 
+                             src="${product.image}" 
+                             alt="${product.name}">
+                    </div>
+                    <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">${product.name}</div>
                         <div class="text-sm text-gray-500">${product.description}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${product.price}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.stock}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                            ${product.status === 'active' ? 'Active' : 'Low Stock'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-900 mr-3">
-                            <i data-feather="edit" class="h-4 w-4"></i>
-                        </button>
-                        <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-900">
-                            <i data-feather="trash-2" class="h-4 w-4"></i>
-                        </button>
-                    </td>
-                `;
+                        <div class="text-xs text-gray-400">Category: ${product.category}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">₹${product.price}</div>
+                ${product.discount > 0 ? 
+                    `<div class="text-xs text-green-600">-${product.discount}% off</div>` : 
+                    ''}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.stock}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                }">
+                    ${product.status === 'active' ? 'Active' : 'Low Stock'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2">
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.bgColor}"></div>
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.textColor}"></div>
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.panelColor}"></div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button onclick="editProduct('${product._id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                    <i data-feather="edit" class="h-4 w-4"></i>
+                </button>
+                <button onclick="deleteProduct('${product._id}')" class="text-red-600 hover:text-red-900">
+                    <i data-feather="trash-2" class="h-4 w-4"></i>
+                </button>
+            </td>
+        `;
         tbody.appendChild(row);
     });
     feather.replace();
@@ -157,15 +196,32 @@ function showAddProductModal() {
 }
 
 function editProduct(id) {
-    const product = products.find(p => p.id === id);
+    const product = products.find(p => p._id === id);
     if (product) {
         editingProductId = id;
         document.getElementById('modalTitle').textContent = 'Edit Product';
-        document.getElementById('productId').value = product.id;
+        document.getElementById('productId').value = product._id;
         document.getElementById('productName').value = product.name;
         document.getElementById('productPrice').value = product.price;
-        document.getElementById('productStock').value = product.stock;
+        document.getElementById('productStock').value = product.stock || 0;
         document.getElementById('productDescription').value = product.description;
+        document.getElementById('productCategory').value = product.category;
+        
+        // Set color values
+        document.getElementById('bgColor').value = product.bgColor;
+        document.getElementById('textColor').value = product.textColor;
+        document.getElementById('panelColor').value = product.panelColor;
+        
+        // Update color preview if you have one
+        updateColorPreview();
+        
+        // Show current image preview if exists
+        const imagePreview = document.getElementById('imagePreview');
+        if (imagePreview && product.image) {
+            imagePreview.src = product.image;
+            imagePreview.classList.remove('hidden');
+        }
+        
         document.getElementById('productModal').classList.remove('hidden');
     }
 }
@@ -197,41 +253,46 @@ async function deleteProduct(id) {
 document.getElementById('productForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const formData = {
-        name: document.getElementById('productName').value,
-        price: parseFloat(document.getElementById('productPrice').value),
-        stock: parseInt(document.getElementById('productStock').value),
-        description: document.getElementById('productDescription').value,
-        status: parseInt(document.getElementById('productStock').value) < 10 ? 'low_stock' : 'active'
-    };
+    const formData = new FormData();
+    formData.append('name', document.getElementById('productName').value);
+    formData.append('price', document.getElementById('productPrice').value);
+    formData.append('stock', document.getElementById('productStock').value);
+    formData.append('description', document.getElementById('productDescription').value);
+    formData.append('category', document.getElementById('productCategory').value);
+    
+    const imageInput = document.getElementById('productImage');
+    if (imageInput.files[0]) {
+        formData.append('image', imageInput.files[0]);
+    }
+
+    // Add color settings
+    formData.append('bgColor', document.getElementById('bgColor').value);
+    formData.append('textColor', document.getElementById('textColor').value);
+    formData.append('panelColor', document.getElementById('panelColor').value);
 
     try {
         if (editingProductId) {
             // Edit existing product
-            const response = await fetch(`/products/${editingProductId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+            const response = await fetch(`/products/update/${editingProductId}`, {
+                method: 'POST',
+                body: formData
             });
             const data = await response.json();
             if (!data.success) {
                 throw new Error(data.message);
             }
+            showNotification('Product updated successfully', 'success');
         } else {
             // Add new product
             const response = await fetch('/products/create', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                body: formData
             });
             const data = await response.json();
             if (!data.success) {
                 throw new Error(data.message);
             }
+            showNotification('Product created successfully', 'success');
         }
         
         await fetchProducts(); // Refresh the products list
@@ -245,7 +306,7 @@ document.getElementById('productForm').addEventListener('submit', async function
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     initDashboard();
-    await Promise.all([fetchProducts(), fetchOrders()]);
+    await fetchProducts();
 });
 
 // Add CSS for active tab

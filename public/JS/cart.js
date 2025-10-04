@@ -1,5 +1,12 @@
-// Store product data from EJS template
+// Store product data and cart state
 let productData = {};
+let cartState = {
+    items: [],
+    totalMRP: 0,
+    totalDiscount: 0,
+    platformFee: 49,
+    finalAmount: 0
+};
 
 // Initialize product data when page loads
 function initializeProductData() {
