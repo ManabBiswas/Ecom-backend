@@ -3,41 +3,55 @@ const router = express.Router();
 const upload = require("../config/multerConfig");
 const config = require("config");
 const productModel = require("../models/productmodels");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
 // Create Product Route
-router.post("/create", upload.single('image'), async (req, res) => {
+router.post("/create", isLoggedIn('owner'), upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
-            req.flash('error', 'Please select an image file');
-            return res.redirect("/owners/admin");
+            return res.status(400).json({
+                success: false,
+                message: 'Please select an image file'
+            });
         }
 
-        let { name, description, price, discount, bgColor, textColor, panelColor, category } = req.body;
+        let { name, description, price, stock, discount, bgColor, textColor, panelColor, category } = req.body;
         let product = await productModel.create({
             image: req.file.buffer,
             name,
             description,
-            price,
-            discount,
+            price: parseFloat(price),
+            stock: parseInt(stock) || 0,
+            discount: parseInt(discount) || 0,
             bgColor,
-            textColor,  
+            textColor,
             panelColor,
             category,
         });
         
-        // Set success flash message
-        req.flash('success', 'Product created successfully!');
-        res.redirect("/owners/admin");
+        // Convert the product to a plain object and add base64 image
+        const productData = {
+            ...product.toObject(),
+            image: `data:image/jpeg;base64,${product.image.toString('base64')}`
+        };
+
+        res.json({
+            success: true,
+            message: 'Product created successfully!',
+            product: productData
+        });
         
     } catch (error) {
-        console.error("Error creating product:", error.message);
-        req.flash('error', error.message);
-        res.redirect("/owners/admin");
+        console.error("Error creating product:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 });
 
 // Get product for update (renders update form with existing data)
-router.get("/update/:id", async (req, res) => {
+router.get("/update/:id", isLoggedIn('owner'), async (req, res) => {
     try {
         const productId = req.params.id;
         const product = await productModel.findById(productId);
@@ -78,7 +92,7 @@ router.get("/update/:id", async (req, res) => {
 });
 
 // Update Product Route
-router.post("/update/:id", upload.single('image'), async (req, res) => {
+router.post("/update/:id", isLoggedIn('owner'), upload.single('image'), async (req, res) => {
     try {
         const productId = req.params.id;
         
@@ -89,13 +103,14 @@ router.post("/update/:id", upload.single('image'), async (req, res) => {
             return res.redirect("/owners/admin");
         }
 
-        let { name, description, price, discount, bgColor, textColor, panelColor, category } = req.body;
+        let { name, description, price, stock, discount, bgColor, textColor, panelColor, category } = req.body;
         
         // Prepare update data
         const updateData = {
             name,
             description,
             price: parseFloat(price),
+            stock: parseInt(stock) || existingProduct.stock || 0,
             discount: parseInt(discount) || 0,
             bgColor,
             textColor,  
@@ -116,13 +131,25 @@ router.post("/update/:id", upload.single('image'), async (req, res) => {
         );
 
         if (!updatedProduct) {
-            req.flash('error', 'Failed to update product');
-            return res.redirect(`/products/update/${productId}`);
+            return res.status(400).json({
+                success: false,
+                message: 'Failed to update product'
+            });
         }
         
-        // Set success flash message
-        req.flash('success', 'Product updated successfully!');
-        res.redirect("/owners/admin");
+        // Convert updated product image to base64
+        const productData = {
+            ...updatedProduct.toObject(),
+            image: req.file ? 
+                `data:image/jpeg;base64,${updatedProduct.image.toString('base64')}` :
+                existingProduct.image
+        };
+
+        res.json({
+            success: true,
+            message: 'Product updated successfully!',
+            product: productData
+        });
         
     } catch (error) {
         console.error("Error updating product:", error.message);
@@ -132,7 +159,7 @@ router.post("/update/:id", upload.single('image'), async (req, res) => {
 });
 
 // Delete Product Route
-router.post("/delete/:id", async (req, res) => {
+router.post("/delete/:id", isLoggedIn('owner'), async (req, res) => {
     try {
         const productId = req.params.id;
         

@@ -25,7 +25,11 @@ const productSchema = mongoose.Schema({
         type: Buffer,
         required: true,
     },
-    
+    stock: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     bgColor: {
         type: String,
         required: true,

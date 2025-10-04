@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Registration - ShopHub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Logo and Title -->
+        <div class="text-center">
+            <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                Create Owner Account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Set up your ShopHub store management account
+            </p>
+        </div>
+
+        <!-- Flash Messages -->
+        <% if (messages && (messages.success || messages.error)) { %>
+            <div class="rounded-md p-4 mb-4
+                <%= messages.success ? 'bg-green-50 border border-green-400' : 'bg-red-50 border border-red-400' %>">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <% if (messages.success) { %>
+                            <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        <% } else { %>
+                            <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        <% } %>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium <%= messages.success ? 'text-green-800' : 'text-red-800' %>">
+                            <%= messages.success || messages.error %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Registration Form -->
+        <form id="registerForm" class="mt-8 space-y-6 bg-white shadow-xl rounded-lg p-8">
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div class="mb-4">
+                    <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input id="fullName" name="fullName" type="text" required 
+                        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md 
+                        focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                        placeholder="Enter your full name">
+                </div>
+
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                    <input id="email" name="email" type="email" required 
+                        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md 
+                        focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                        placeholder="Enter your email">
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input id="password" name="password" type="password" required
+                        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md
+                        focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                        placeholder="Enter your password">
+                </div>
+
+                <div class="mb-4">
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" required
+                        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md
+                        focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                        placeholder="Confirm your password">
+                </div>
+
+                <div class="mb-4">
+                    <label for="gstno" class="block text-sm font-medium text-gray-700 mb-1">GST Number</label>
+                    <input id="gstno" name="gstno" type="text" required
+                        class="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md
+                        focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                        placeholder="Enter your GST number">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium 
+                    rounded-md text-white gradient-bg hover:opacity-90 focus:outline-none focus:ring-2 
+                    focus:ring-offset-2 focus:ring-violet-500">
+                    Create Account
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-600">
+                Already have an account? 
+                <a href="/owners/login" class="font-medium text-violet-600 hover:text-violet-500">
+                    Sign in here
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                password: password,
+                gstno: document.getElementById('gstno').value
+            };
+
+            try {
+                const response = await fetch('/owners/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/owners/dashboard';
+                } else {
+                    throw new Error(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                alert(error.message || 'An error occurred during registration');
+            }
+        });
+    </script>
+</body>
+</html>

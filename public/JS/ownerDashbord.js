@@ -1,19 +1,90 @@
-// Sample data - In real implementation, this would come from your backend
-let products = [
-    { id: 1, name: "Wireless Headphones", price: 99.99, stock: 25, description: "High-quality wireless headphones", status: "active" },
-    { id: 2, name: "Smartphone Case", price: 19.99, stock: 50, description: "Protective phone case", status: "active" },
-    { id: 3, name: "Bluetooth Speaker", price: 79.99, stock: 15, description: "Portable bluetooth speaker", status: "active" },
-    { id: 4, name: "USB Cable", price: 12.99, stock: 100, description: "High-speed USB cable", status: "active" },
-    { id: 5, name: "Laptop Stand", price: 45.99, stock: 8, description: "Adjustable laptop stand", status: "low_stock" }
-];
+let products = [];
+let orders = [];
+let totalRevenue = 0;
 
-let orders = [
-    { id: 1, productId: 1, productName: "Wireless Headphones", quantity: 2, date: "2024-01-20", customer: "John Doe" },
-    { id: 2, productId: 2, productName: "Smartphone Case", quantity: 1, date: "2024-01-19", customer: "Jane Smith" },
-    { id: 3, productId: 1, productName: "Wireless Headphones", quantity: 1, date: "2024-01-18", customer: "Bob Johnson" },
-    { id: 4, productId: 3, productName: "Bluetooth Speaker", quantity: 1, date: "2024-01-17", customer: "Alice Brown" },
-    { id: 5, productId: 2, productName: "Smartphone Case", quantity: 3, date: "2024-01-16", customer: "Charlie Wilson" }
-];
+// Fetch orders data
+async function fetchOrders() {
+    try {
+        const response = await fetch('/owners/orders/all');
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = '/owners/login';
+                return;
+            }
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        if (data.success) {
+            orders = data.data.orders;
+            totalRevenue = data.data.totalRevenue;
+            updateStats();
+            renderOrderAnalytics();
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        showNotification('Error loading orders', 'error');
+    }
+}
+
+// Fetch products from backend
+async function fetchProducts() {
+    try {
+        const response = await fetch('/owners/admin/products');
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login if unauthorized
+                window.location.href = '/owners/login';
+                return;
+            }
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        if (data.success) {
+            products = data.products.map(product => ({
+                ...product,
+                stock: parseInt(product.stock) || 0,
+                status: parseInt(product.stock) < 10 ? 'low_stock' : 'active'
+            }));
+            renderProducts();
+            updateStats();
+            showNotification('Products loaded successfully', 'success');
+        } else {
+            throw new Error(data.message || 'Error loading products');
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        showNotification(error.message || 'Error loading products', 'error');
+        if (error.message.includes('unauthorized') || error.message.includes('login')) {
+            setTimeout(() => window.location.href = '/owners/login', 2000);
+        }
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white shadow-lg z-50 animate-fade-in`;
+    notificationDiv.textContent = message;
+    document.body.appendChild(notificationDiv);
+    setTimeout(() => {
+        notificationDiv.remove();
+    }, 3000);
+}// Fetch orders from backend
+// async function fetchOrders() {
+//     try {
+//         const response = await fetch('/products/orders');
+//         const data = await response.json();
+//         if (data.success) {
+//             orders = data.orders;
+//             renderOrderAnalytics();
+//             updateStats();
+//         }
+//     } catch (error) {
+//         console.error('Error fetching orders:', error);
+//     }
+// }
 
 let editingProductId = null;
 
@@ -55,26 +126,50 @@ function renderProducts() {
     products.forEach(product => {
         const row = document.createElement('tr');
         row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="h-16 w-16 flex-shrink-0">
+                        <img class="h-16 w-16 rounded-lg object-cover" 
+                             src="${product.image}" 
+                             alt="${product.name}">
+                    </div>
+                    <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">${product.name}</div>
                         <div class="text-sm text-gray-500">${product.description}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${product.price}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.stock}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                            ${product.status === 'active' ? 'Active' : 'Low Stock'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editProduct(${product.id})" class="text-blue-600 hover:text-blue-900 mr-3">
-                            <i data-feather="edit" class="h-4 w-4"></i>
-                        </button>
-                        <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-900">
-                            <i data-feather="trash-2" class="h-4 w-4"></i>
-                        </button>
-                    </td>
-                `;
+                        <div class="text-xs text-gray-400">Category: ${product.category}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">₹${product.price}</div>
+                ${product.discount > 0 ? 
+                    `<div class="text-xs text-green-600">-${product.discount}% off</div>` : 
+                    ''}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.stock}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                }">
+                    ${product.status === 'active' ? 'Active' : 'Low Stock'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2">
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.bgColor}"></div>
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.textColor}"></div>
+                    <div class="w-6 h-6 rounded-full" style="background-color: ${product.panelColor}"></div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button onclick="editProduct('${product._id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                    <i data-feather="edit" class="h-4 w-4"></i>
+                </button>
+                <button onclick="deleteProduct('${product._id}')" class="text-red-600 hover:text-red-900">
+                    <i data-feather="trash-2" class="h-4 w-4"></i>
+                </button>
+            </td>
+        `;
         tbody.appendChild(row);
     });
     feather.replace();
@@ -129,28 +224,18 @@ function renderOrderAnalytics() {
 function updateStats() {
     document.getElementById('totalProducts').textContent = products.length;
     document.getElementById('totalOrders').textContent = orders.length;
+    document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    })}`;
 }
 
 // Product modal functions
-function showAddProductModal() {
-    editingProductId = null;
-    document.getElementById('modalTitle').textContent = 'Add New Product';
-    document.getElementById('productForm').reset();
-    document.getElementById('productId').value = '';
-    document.getElementById('productModal').classList.remove('hidden');
-}
-
 function editProduct(id) {
-    const product = products.find(p => p.id === id);
+    const product = products.find(p => p._id === id);
     if (product) {
-        editingProductId = id;
-        document.getElementById('modalTitle').textContent = 'Edit Product';
-        document.getElementById('productId').value = product.id;
-        document.getElementById('productName').value = product.name;
-        document.getElementById('productPrice').value = product.price;
-        document.getElementById('productStock').value = product.stock;
-        document.getElementById('productDescription').value = product.description;
-        document.getElementById('productModal').classList.remove('hidden');
+        // Redirect to the update product page
+        window.location.href = `/products/update/${id}`;
     }
 }
 
@@ -158,45 +243,122 @@ function hideProductModal() {
     document.getElementById('productModal').classList.add('hidden');
 }
 
-function deleteProduct(id) {
+async function deleteProduct(id) {
     if (confirm('Are you sure you want to delete this product?')) {
-        products = products.filter(p => p.id !== id);
-        renderProducts();
-        updateStats();
+        try {
+            const response = await fetch(`/products/delete/${id}`, {
+                method: 'POST',
+                credentials: 'same-origin' // Include cookies
+            });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to delete product');
+            }
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Product deleted successfully', 'success');
+                await fetchProducts(); // Refresh the products list
+            } else {
+                throw new Error(data.message || 'Failed to delete product');
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showNotification(error.message || 'Error deleting product', 'error');
+        }
     }
 }
 
 // Handle form submission
-document.getElementById('productForm').addEventListener('submit', function (e) {
+document.getElementById('productForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const formData = {
-        name: document.getElementById('productName').value,
-        price: parseFloat(document.getElementById('productPrice').value),
-        stock: parseInt(document.getElementById('productStock').value),
-        description: document.getElementById('productDescription').value,
-        status: parseInt(document.getElementById('productStock').value) < 10 ? 'low_stock' : 'active'
-    };
-
-    if (editingProductId) {
-        // Edit existing product
-        const index = products.findIndex(p => p.id === editingProductId);
-        if (index !== -1) {
-            products[index] = { ...products[index], ...formData };
-        }
-    } else {
-        // Add new product
-        const newId = Math.max(...products.map(p => p.id)) + 1;
-        products.push({ id: newId, ...formData });
+    const formData = new FormData();
+    formData.append('name', document.getElementById('productName').value);
+    formData.append('price', document.getElementById('productPrice').value);
+    formData.append('stock', document.getElementById('productStock').value);
+    formData.append('description', document.getElementById('productDescription').value);
+    formData.append('category', document.getElementById('productCategory').value);
+    
+    const imageInput = document.getElementById('productImage');
+    if (imageInput.files[0]) {
+        formData.append('image', imageInput.files[0]);
     }
 
-    renderProducts();
-    updateStats();
-    hideProductModal();
+    // Add color settings
+    formData.append('bgColor', document.getElementById('bgColor').value);
+    formData.append('textColor', document.getElementById('textColor').value);
+    formData.append('panelColor', document.getElementById('panelColor').value);
+
+    try {
+        if (editingProductId) {
+            // Edit existing product
+            const response = await fetch(`/products/update/${editingProductId}`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin' // Include cookies
+            });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to update product');
+            }
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to update product');
+            }
+            showNotification('Product updated successfully', 'success');
+        } else {
+            // Add new product
+            const response = await fetch('/products/create', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin' // Include cookies
+            });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to create product');
+            }
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to create product');
+            }
+            showNotification('Product created successfully', 'success');
+        }
+        
+        await fetchProducts(); // Refresh the products list
+        hideProductModal();
+    } catch (error) {
+        console.error('Error saving product:', error);
+        alert('Error saving product: ' + error.message);
+    }
 });
 
 // Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', async () => {
+    // Fetch both products and orders
+    await Promise.all([
+        fetchProducts(),
+        fetchOrders()
+    ]);
+    
+    initDashboard();       // Then initialize the UI
+    
+    // Set up automatic refresh every 30 seconds
+    setInterval(async () => {
+        await Promise.all([
+            fetchProducts(),
+            fetchOrders()
+        ]);
+    }, 30000);
+});
 
 // Add CSS for active tab
 const style = document.createElement('style');

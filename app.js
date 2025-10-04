@@ -1,14 +1,20 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 const path = require("path");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 
-require('dotenv').config()
+// Load environment variables based on NODE_ENV
+const env = process.env.NODE_ENV || 'development';
+require('dotenv').config();
 
+// Set config environment
+process.env.NODE_CONFIG_ENV = env;
+const config = require('config');
 const db = require("./config/mongooseConnection");
 
 const indexRouter = require("./routes/index")
@@ -25,9 +31,18 @@ app.set("view engine", "ejs");
 
 app.use(expressSession({
     secret: process.env.SESSION_SECRET || 'fallback-secret',
-    resave: false,  //false to avoid resaving session if unmodified
-    // saveUninitialized: false, //true to save uninitialized sessions
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ecommerce',
+        ttl: 24 * 60 * 60, // Session TTL (1 day)
+        autoRemove: 'native'
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
 }));
 app.use(flash());
 
@@ -45,6 +60,6 @@ app.use("/owners", ownerRouter);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on port ${port}`);
 });

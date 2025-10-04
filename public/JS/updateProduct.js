@@ -70,11 +70,12 @@ function updateLivePreview() {
     const preview = document.getElementById('livePreview');
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
+    const stock = document.getElementById('stock').value;
     const discount = document.getElementById('discount').value;
     const bgColor = document.getElementById('bgColor').value;
     const textColor = document.getElementById('textColor').value;
     const panelColor = document.getElementById('panelColor').value;
-    const imagePreview = document.getElementById('imagePreview').src;
+    const imagePreview = document.getElementById('imagePreview').src || document.querySelector('img[alt="Current Product Image"]')?.src;
 
     if (name || price || imagePreview) {
         const discountedPrice = discount ? (price * (1 - discount / 100)).toFixed(2) : price;
@@ -93,110 +94,78 @@ function updateLivePreview() {
                         <span class="font-bold">₹${discountedPrice || price || '0.00'}</span>
                         ${discount > 0 ? `<span class="text-xs text-white italic px-2 py-1 rounded-full bg-red-500">${discount}% OFF</span>` : ''}
                     </div>
+                    <div class="text-sm mt-1">Stock: ${stock || 0} units</div>
                 </div>
             </div>
         </div>
     `;
     } else {
-        preview.innerHTML = '<p class="text-gray-400 text-sm">Preview will appear here as you fill the form</p>';
+        preview.innerHTML = '<p class="text-gray-400 text-sm">Preview will update as you modify the form</p>';
     }
 }
 
-// Add event listeners for live preview
-['name', 'price', 'discount'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateLivePreview);
-});
-
-// Auto-hide flash messages
-function hideMessage(elementId) {
-    const element = document.getElementById(elementId);
-    if (element && !element.classList.contains('hidden')) {
-        setTimeout(() => {
-            element.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                element.classList.add('hidden');
-            }, 500);
-        }, 5000);
-    }
-}
-
-// Show flash messages if they exist (you can call these based on server response)
-// hideMessage('successMessage');
-// hideMessage('errorMessage');
-
-// Form validation and submission
-document.querySelector('form').addEventListener('submit', async function (e) {
+// Handle form submission
+document.getElementById('updateForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     
-    const requiredFields = ['name', 'price', 'image', 'bgColor', 'textColor', 'panelColor', 'category'];
-    let hasErrors = false;
-
-    requiredFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (!field.value.trim()) {
-            field.classList.add('border-red-500', 'ring-red-100');
-            field.classList.remove('border-gray-200');
-            hasErrors = true;
-        } else {
-            field.classList.remove('border-red-500', 'ring-red-100');
-            field.classList.add('border-gray-200');
-        }
-    });
-
-    if (hasErrors) {
-        // Show error message
-        const errorMsg = document.getElementById('errorMessage');
-        errorMsg.classList.remove('hidden');
-        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        hideMessage('errorMessage');
-        return;
-    }
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Updating...</span>';
 
     try {
         const formData = new FormData(this);
-        
-        const response = await fetch('/products/create', {
+        const productId = this.action.split('/').pop();
+
+        const response = await fetch(`/products/update/${productId}`, {
             method: 'POST',
             body: formData,
             credentials: 'same-origin'
         });
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                window.location.href = '/owners/login';
-                return;
-            }
-            throw new Error('Failed to create product');
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Received non-JSON response from server');
         }
 
         const data = await response.json();
 
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to update product');
+        }
+
         if (data.success) {
             // Show success message
             const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = data.message || 'Product updated successfully!';
             successMsg.classList.remove('hidden');
             successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // Reset form and preview
-            this.reset();
-            removeImage();
-            updateLivePreview();
-
-            // Redirect to admin dashboard after delay
+            // Redirect to dashboard after delay
             setTimeout(() => {
-                window.location.href = '/owners/admin/';
+                window.location.href = '/owners/dashboard';
             }, 2000);
         } else {
-            throw new Error(data.message || 'Failed to create product');
+            throw new Error(data.message || 'Failed to update product');
         }
     } catch (error) {
-        console.error('Error creating product:', error);
+        console.error('Error updating product:', error);
         const errorMsg = document.getElementById('errorMessage');
         errorMsg.textContent = error.message || 'Something went wrong. Please try again.';
         errorMsg.classList.remove('hidden');
         errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        hideMessage('errorMessage');
+        
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonText;
     }
+});
+
+// Initialize preview
+document.addEventListener('DOMContentLoaded', updateLivePreview);
+
+// Add event listeners for live preview
+['name', 'price', 'stock', 'discount'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateLivePreview);
 });
