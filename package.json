@@ -2,6 +2,9 @@
   "name": "backend_e-comarce",
   "version": "1.0.0",
   "description": "Backend for e-commerce site",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "author": "Manab",
   "keywords": [
     "express",
