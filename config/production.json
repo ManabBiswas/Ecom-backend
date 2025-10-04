@@ -1,3 +1,6 @@
 {
-    "MONGODB_URL": "process.env.MONGODB_URI"
+    "MONGODB_URL": "MONGODB_URI",
+    "PORT": "PORT",
+    "JWT_SECRET": "JWT_SECRET",
+    "SESSION_SECRET": "SESSION_SECRET"
 }
