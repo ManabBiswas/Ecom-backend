@@ -3,9 +3,10 @@ const router = express.Router();
 const upload = require("../config/multerConfig");
 const config = require("config");
 const productModel = require("../models/productmodels");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
 // Create Product Route
-router.post("/create", upload.single('image'), async (req, res) => {
+router.post("/create", isLoggedIn('owner'), upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -14,12 +15,13 @@ router.post("/create", upload.single('image'), async (req, res) => {
             });
         }
 
-        let { name, description, price, discount, bgColor, textColor, panelColor, category } = req.body;
+        let { name, description, price, stock, discount, bgColor, textColor, panelColor, category } = req.body;
         let product = await productModel.create({
             image: req.file.buffer,
             name,
             description,
             price: parseFloat(price),
+            stock: parseInt(stock) || 0,
             discount: parseInt(discount) || 0,
             bgColor,
             textColor,
@@ -27,13 +29,16 @@ router.post("/create", upload.single('image'), async (req, res) => {
             category,
         });
         
+        // Convert the product to a plain object and add base64 image
+        const productData = {
+            ...product.toObject(),
+            image: `data:image/jpeg;base64,${product.image.toString('base64')}`
+        };
+
         res.json({
             success: true,
             message: 'Product created successfully!',
-            product: {
-                ...product.toObject(),
-                image: `data:image/jpeg;base64,${product.image.toString('base64')}`
-            }
+            product: productData
         });
         
     } catch (error) {
@@ -46,7 +51,7 @@ router.post("/create", upload.single('image'), async (req, res) => {
 });
 
 // Get product for update (renders update form with existing data)
-router.get("/update/:id", async (req, res) => {
+router.get("/update/:id", isLoggedIn('owner'), async (req, res) => {
     try {
         const productId = req.params.id;
         const product = await productModel.findById(productId);
@@ -87,7 +92,7 @@ router.get("/update/:id", async (req, res) => {
 });
 
 // Update Product Route
-router.post("/update/:id", upload.single('image'), async (req, res) => {
+router.post("/update/:id", isLoggedIn('owner'), upload.single('image'), async (req, res) => {
     try {
         const productId = req.params.id;
         
@@ -141,7 +146,7 @@ router.post("/update/:id", upload.single('image'), async (req, res) => {
 });
 
 // Delete Product Route
-router.post("/delete/:id", async (req, res) => {
+router.post("/delete/:id", isLoggedIn('owner'), async (req, res) => {
     try {
         const productId = req.params.id;
         

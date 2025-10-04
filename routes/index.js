@@ -23,7 +23,7 @@ router.get("/contact", (req, res) => {
 });
 
 // Apply authentication middleware to protected routes
-router.get("/shop", isLoggedIn, async (req, res) => {
+router.get("/shop", isLoggedIn('user'), async (req, res) => {
     try {
         let products = await productmodels.find();
         // console.log("Products fetched for shop:", products.length);
@@ -42,7 +42,7 @@ router.get("/shop", isLoggedIn, async (req, res) => {
     }
 });
 
-router.get("/cart", isLoggedIn, async (req, res) => {
+router.get("/cart", isLoggedIn('user'), async (req, res) => {
     try {
         // Populate the user's cart with product details
         let user = await usermodels.findById(req.user._id).populate('cart');
@@ -55,7 +55,7 @@ router.get("/cart", isLoggedIn, async (req, res) => {
     }
 });
 
-router.get("/addtoCart/:productId", isLoggedIn, async (req, res) => {
+router.get("/addtoCart/:productId", isLoggedIn('user'), async (req, res) => {
     try {
         // Fix: Use req.user._id instead of req.user.email
         let user = await usermodels.findById(req.user._id);
@@ -79,7 +79,7 @@ router.get("/addtoCart/:productId", isLoggedIn, async (req, res) => {
 });
 
 // Route to remove item from cart
-router.get("/removeFromCart/:productId", isLoggedIn, async (req, res) => {
+router.get("/removeFromCart/:productId", isLoggedIn('user'), async (req, res) => {
     try {
         let user = await usermodels.findById(req.user._id);
         user.cart = user.cart.filter(item => item.toString() !== req.params.productId);

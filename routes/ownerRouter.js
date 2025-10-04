@@ -6,8 +6,37 @@ const userModel = require("../models/usermodels");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
-router.get("/admin", async (req, res) => {
+// Login page route
+router.get("/login", (req, res) => {
+    // If already logged in, redirect to dashboard
+    if (req.cookies.token) {
+        return res.redirect('/owners/dashboard');
+    }
+    res.render("ownerLogin", {
+        messages: {
+            success: req.flash('success'),
+            error: req.flash('error')
+        }
+    });
+});
+
+// Registration page route
+router.get("/register", (req, res) => {
+    // If already logged in, redirect to dashboard
+    if (req.cookies.token) {
+        return res.redirect('/owners/dashboard');
+    }
+    res.render("ownerRegister", {
+        messages: {
+            success: req.flash('success'),
+            error: req.flash('error')
+        }
+    });
+});
+
+router.get("/admin", isLoggedIn('owner'), async (req, res) => {
     try {
         // Get flash messages
         const messages = {
@@ -47,14 +76,30 @@ router.get("/admin", async (req, res) => {
     }
 });
 
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard", isLoggedIn('owner'), async (req, res) => {
     try {
         // Check if owner is logged in
         if (!req.cookies.token) {
             return res.redirect('/owners/login');
         }
 
+        // Verify the token and get owner info
+        const token = req.cookies.token;
+        const decoded = jwt.verify(token, process.env.JWT_KEY || 'fallback-secret');
+        
+        // Get owner details
+        const owner = await ownerModel.findById(decoded.ownerId);
+        if (!owner) {
+            res.clearCookie('token');
+            return res.redirect('/owners/login');
+        }
+
         res.render("ownerDashbord", {
+            owner: {
+                fullName: owner.fullName,
+                email: owner.email,
+                gstno: owner.gstno
+            },
             messages: {
                 success: req.flash('success'),
                 error: req.flash('error')
@@ -63,12 +108,13 @@ router.get("/dashboard", async (req, res) => {
     } catch (error) {
         console.error("Error loading dashboard:", error);
         req.flash('error', 'Error loading dashboard');
-        res.redirect('/');
+        res.clearCookie('token');
+        res.redirect('/owners/login');
     }
 });
 
 // Get owner's products
-router.get("/admin/products", async (req, res) => {
+router.get("/admin/products", isLoggedIn('owner'), async (req, res) => {
     try {
         // Check if owner is logged in
         if (!req.cookies.token) {
@@ -78,23 +124,51 @@ router.get("/admin/products", async (req, res) => {
             });
         }
 
+        // Verify token and get owner info
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_KEY || 'fallback-secret');
+        const owner = await ownerModel.findById(decoded.ownerId);
+        
+        if (!owner) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid owner'
+            });
+        }
+
+        // Get all products
         const products = await productModel.find();
         
-        // Convert buffer images to base64
+        // Convert buffer images to base64 and add additional stats
         const productsWithImages = products.map(product => {
             let imageData = null;
             if (product.image) {
                 imageData = `data:image/jpeg;base64,${product.image.toString('base64')}`;
             }
+            
+            // Calculate product stats
+            const status = parseInt(product.stock) < 10 ? 'low_stock' : 'active';
+            const discountedPrice = product.price - (product.price * (product.discount || 0) / 100);
+            
             return {
                 ...product.toObject(),
-                image: imageData
+                image: imageData,
+                status,
+                discountedPrice
             };
         });
 
+        // Calculate dashboard stats
+        const stats = {
+            totalProducts: products.length,
+            activeProducts: productsWithImages.filter(p => p.status === 'active').length,
+            lowStockProducts: productsWithImages.filter(p => p.status === 'low_stock').length,
+            totalRevenue: productsWithImages.reduce((sum, p) => sum + p.price * p.soldCount, 0)
+        };
+
         res.json({
             success: true,
-            products: productsWithImages
+            products: productsWithImages,
+            stats
         });
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -182,7 +256,15 @@ router.post("/create", async (req, res) => {
 // Owner Login
 router.post("/login", async (req, res) => {
     try {
-        let { email, password } = req.body;
+        let { email, password, rememberMe } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
 
         // Find owner
         let owner = await ownerModel.findOne({ email: email });
@@ -206,14 +288,14 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign(
             { email: owner.email, ownerId: owner._id, role: 'owner' }, 
             process.env.JWT_KEY || 'fallback-secret',
-            { expiresIn: '24h' }
+            { expiresIn: rememberMe ? '30d' : '24h' }
         );
 
         // Set cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 // 30 days or 24 hours
         });
 
         console.log("Owner logged in successfully:", owner.fullName);

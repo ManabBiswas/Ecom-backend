@@ -1,22 +1,62 @@
 let products = [];
+let orders = [];
+let totalRevenue = 0;
+
+// Fetch orders data
+async function fetchOrders() {
+    try {
+        const response = await fetch('/owners/orders/all');
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = '/owners/login';
+                return;
+            }
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        if (data.success) {
+            orders = data.data.orders;
+            totalRevenue = data.data.totalRevenue;
+            updateStats();
+            renderOrderAnalytics();
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        showNotification('Error loading orders', 'error');
+    }
+}
 
 // Fetch products from backend
 async function fetchProducts() {
     try {
         const response = await fetch('/owners/admin/products');
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login if unauthorized
+                window.location.href = '/owners/login';
+                return;
+            }
+            throw new Error('Network response was not ok');
+        }
         const data = await response.json();
         if (data.success) {
             products = data.products.map(product => ({
                 ...product,
+                stock: parseInt(product.stock) || 0,
                 status: parseInt(product.stock) < 10 ? 'low_stock' : 'active'
             }));
             renderProducts();
             updateStats();
             showNotification('Products loaded successfully', 'success');
+        } else {
+            throw new Error(data.message || 'Error loading products');
         }
     } catch (error) {
         console.error('Error fetching products:', error);
-        showNotification('Error loading products', 'error');
+        showNotification(error.message || 'Error loading products', 'error');
+        if (error.message.includes('unauthorized') || error.message.includes('login')) {
+            setTimeout(() => window.location.href = '/owners/login', 2000);
+        }
     }
 }
 
@@ -184,45 +224,18 @@ function renderOrderAnalytics() {
 function updateStats() {
     document.getElementById('totalProducts').textContent = products.length;
     document.getElementById('totalOrders').textContent = orders.length;
+    document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+    })}`;
 }
 
 // Product modal functions
-function showAddProductModal() {
-    editingProductId = null;
-    document.getElementById('modalTitle').textContent = 'Add New Product';
-    document.getElementById('productForm').reset();
-    document.getElementById('productId').value = '';
-    document.getElementById('productModal').classList.remove('hidden');
-}
-
 function editProduct(id) {
     const product = products.find(p => p._id === id);
     if (product) {
-        editingProductId = id;
-        document.getElementById('modalTitle').textContent = 'Edit Product';
-        document.getElementById('productId').value = product._id;
-        document.getElementById('productName').value = product.name;
-        document.getElementById('productPrice').value = product.price;
-        document.getElementById('productStock').value = product.stock || 0;
-        document.getElementById('productDescription').value = product.description;
-        document.getElementById('productCategory').value = product.category;
-        
-        // Set color values
-        document.getElementById('bgColor').value = product.bgColor;
-        document.getElementById('textColor').value = product.textColor;
-        document.getElementById('panelColor').value = product.panelColor;
-        
-        // Update color preview if you have one
-        updateColorPreview();
-        
-        // Show current image preview if exists
-        const imagePreview = document.getElementById('imagePreview');
-        if (imagePreview && product.image) {
-            imagePreview.src = product.image;
-            imagePreview.classList.remove('hidden');
-        }
-        
-        document.getElementById('productModal').classList.remove('hidden');
+        // Redirect to the update product page
+        window.location.href = `/products/update/${id}`;
     }
 }
 
@@ -233,18 +246,27 @@ function hideProductModal() {
 async function deleteProduct(id) {
     if (confirm('Are you sure you want to delete this product?')) {
         try {
-            const response = await fetch(`/products/${id}`, {
-                method: 'DELETE'
+            const response = await fetch(`/products/delete/${id}`, {
+                method: 'POST',
+                credentials: 'same-origin' // Include cookies
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to delete product');
+            }
             const data = await response.json();
             if (data.success) {
+                showNotification('Product deleted successfully', 'success');
                 await fetchProducts(); // Refresh the products list
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Failed to delete product');
             }
         } catch (error) {
             console.error('Error deleting product:', error);
-            alert('Error deleting product: ' + error.message);
+            showNotification(error.message || 'Error deleting product', 'error');
         }
     }
 }
@@ -275,22 +297,38 @@ document.getElementById('productForm').addEventListener('submit', async function
             // Edit existing product
             const response = await fetch(`/products/update/${editingProductId}`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin' // Include cookies
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to update product');
+            }
             const data = await response.json();
             if (!data.success) {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Failed to update product');
             }
             showNotification('Product updated successfully', 'success');
         } else {
             // Add new product
             const response = await fetch('/products/create', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin' // Include cookies
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/owners/login';
+                    return;
+                }
+                throw new Error('Failed to create product');
+            }
             const data = await response.json();
             if (!data.success) {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Failed to create product');
             }
             showNotification('Product created successfully', 'success');
         }
@@ -305,8 +343,21 @@ document.getElementById('productForm').addEventListener('submit', async function
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    initDashboard();
-    await fetchProducts();
+    // Fetch both products and orders
+    await Promise.all([
+        fetchProducts(),
+        fetchOrders()
+    ]);
+    
+    initDashboard();       // Then initialize the UI
+    
+    // Set up automatic refresh every 30 seconds
+    setInterval(async () => {
+        await Promise.all([
+            fetchProducts(),
+            fetchOrders()
+        ]);
+    }, 30000);
 });
 
 // Add CSS for active tab

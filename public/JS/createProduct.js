@@ -127,7 +127,9 @@ function hideMessage(elementId) {
 // hideMessage('errorMessage');
 
 // Form validation and submission
-document.querySelector('form').addEventListener('submit', function (e) {
+document.querySelector('form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    
     const requiredFields = ['name', 'price', 'image', 'bgColor', 'textColor', 'panelColor', 'category'];
     let hasErrors = false;
 
@@ -144,9 +146,55 @@ document.querySelector('form').addEventListener('submit', function (e) {
     });
 
     if (hasErrors) {
-        e.preventDefault();
         // Show error message
         const errorMsg = document.getElementById('errorMessage');
+        errorMsg.classList.remove('hidden');
+        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        hideMessage('errorMessage');
+        return;
+    }
+
+    try {
+        const formData = new FormData(this);
+        
+        const response = await fetch('/products/create', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = '/owners/login';
+                return;
+            }
+            throw new Error('Failed to create product');
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.remove('hidden');
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Reset form and preview
+            this.reset();
+            removeImage();
+            updateLivePreview();
+
+            // Redirect to admin dashboard after delay
+            setTimeout(() => {
+                window.location.href = '/owners/admin/';
+            }, 2000);
+        } else {
+            throw new Error(data.message || 'Failed to create product');
+        }
+    } catch (error) {
+        console.error('Error creating product:', error);
+        const errorMsg = document.getElementById('errorMessage');
+        errorMsg.textContent = error.message || 'Something went wrong. Please try again.';
         errorMsg.classList.remove('hidden');
         errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
         hideMessage('errorMessage');
