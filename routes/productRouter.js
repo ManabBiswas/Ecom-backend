@@ -103,13 +103,14 @@ router.post("/update/:id", isLoggedIn('owner'), upload.single('image'), async (r
             return res.redirect("/owners/admin");
         }
 
-        let { name, description, price, discount, bgColor, textColor, panelColor, category } = req.body;
+        let { name, description, price, stock, discount, bgColor, textColor, panelColor, category } = req.body;
         
         // Prepare update data
         const updateData = {
             name,
             description,
             price: parseFloat(price),
+            stock: parseInt(stock) || existingProduct.stock || 0,
             discount: parseInt(discount) || 0,
             bgColor,
             textColor,  
@@ -130,13 +131,25 @@ router.post("/update/:id", isLoggedIn('owner'), upload.single('image'), async (r
         );
 
         if (!updatedProduct) {
-            req.flash('error', 'Failed to update product');
-            return res.redirect(`/products/update/${productId}`);
+            return res.status(400).json({
+                success: false,
+                message: 'Failed to update product'
+            });
         }
         
-        // Set success flash message
-        req.flash('success', 'Product updated successfully!');
-        res.redirect("/owners/admin");
+        // Convert updated product image to base64
+        const productData = {
+            ...updatedProduct.toObject(),
+            image: req.file ? 
+                `data:image/jpeg;base64,${updatedProduct.image.toString('base64')}` :
+                existingProduct.image
+        };
+
+        res.json({
+            success: true,
+            message: 'Product updated successfully!',
+            product: productData
+        });
         
     } catch (error) {
         console.error("Error updating product:", error.message);

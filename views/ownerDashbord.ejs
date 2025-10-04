@@ -20,9 +20,9 @@
           </div>
         </div>
         <div class="flex items-center space-x-4">
-          <span class="text-gray-600">Welcome, Store Owner</span>
+          <span class="text-gray-600">Welcome, <%= owner.fullName %></span>
           <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <span class="text-white text-sm font-medium">SO</span>
+            <span class="text-white text-sm font-medium"><%= owner.fullName.charAt(0).toUpperCase() %></span>
           </div>
         </div>
       </div>
